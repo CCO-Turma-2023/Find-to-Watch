@@ -6,7 +6,7 @@ export default function Home() {
     const {media, setMedia} = useContextHome()
     return ( 
         <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
-                <ShowMedia medias={media}></ShowMedia>
+            <ShowMedia medias={media}></ShowMedia>
         </ScrollView>
     )
 }
