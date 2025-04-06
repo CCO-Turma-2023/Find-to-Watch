@@ -11,7 +11,7 @@ export default function Header() {
         setMovieSearch(text);
       };
 
-  return (
+  return ( 
     <View className='w-full bg-blue-600 flex justify-center p-2 items-center'>
         <View className="flex flex-row justify-center items-center">
             <View className="bg-white rounded-full h-12 w-12"></View>
