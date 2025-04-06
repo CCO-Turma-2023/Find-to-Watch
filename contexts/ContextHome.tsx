@@ -1,5 +1,5 @@
-import { MovieSearchProps } from '@/interfaces/search-interface';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { MovieSearchProps } from "@/interfaces/search-interface";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface ContextHomeType {
   media: MovieSearchProps[];
@@ -20,6 +20,7 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
 
 export const useContextHome = () => {
   const context = useContext(ContextHome);
-  if (!context) throw new Error("useContextHome deve ser usado dentro de um MyProvider");
+  if (!context)
+    throw new Error("useContextHome deve ser usado dentro de um MyProvider");
   return context;
 };
