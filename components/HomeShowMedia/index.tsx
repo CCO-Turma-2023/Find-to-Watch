@@ -7,32 +7,35 @@ import {
   Image,
   ScrollView,
 } from "react-native";
+
+import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 
 interface ShowMediaProps {
   medias: MovieSearchProps[];
+  horizontal?: false | true;
 }
 
-export default function ShowMedia({ medias }: ShowMediaProps) {
+export default function ShowMedia({ medias, horizontal }: ShowMediaProps) {
   return (
     <ScrollView
-      horizontal={true}
-      className="flex w-full flex-row"
-      showsHorizontalScrollIndicator={false}
-    >
+          horizontal={horizontal}
+          showsHorizontalScrollIndicator={!horizontal}
+          className="px-2 pt-2"
+        >
       {medias?.length > 0 &&
         medias.map((media, index) => (
-          <View key={index} className="mb-4 flex p-1">
-            {media.poster_path && (
-              <Image
-                source={{
-                  uri: `https://image.tmdb.org/t/p/original${media.poster_path}`,
-                }}
-                className="h-36 w-24"
-              />
-            )}
-            {/* <Text className="text-center text-lg font-bold">{media.title}</Text>
-            <Text className="text-center">{media.overview}</Text> */}
+          <View key={index} className="mb-2 flex p-1">
+              <Link href={{ pathname: "/content/[id]", params: { id: media.id} }}>
+              {media.poster_path && (
+                <Image
+                  source={{
+                    uri: `https://image.tmdb.org/t/p/original${media.poster_path}`,
+                  }}
+                  className="h-36 w-24"
+                />
+              )}
+              </Link>
           </View>
         ))}
     </ScrollView>

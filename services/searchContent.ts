@@ -4,6 +4,7 @@ import { MovieSearchProps } from "@/interfaces/search-interface";
 import React from "react";
 
 export const requestContents = async (
+  
   mediaSearch: string,
   setMedias: React.Dispatch<React.SetStateAction<MovieSearchProps[]>>,
 ) => {
