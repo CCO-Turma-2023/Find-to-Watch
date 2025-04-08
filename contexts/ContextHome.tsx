@@ -1,5 +1,12 @@
 import { MovieSearchProps } from "@/interfaces/search-interface";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { initialRequest } from "@/services/searchContent";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 interface ContextHomeType {
   media: MovieSearchProps[];
@@ -10,6 +17,10 @@ const ContextHome = createContext<ContextHomeType | undefined>(undefined);
 
 export const ProviderHome = ({ children }: { children: ReactNode }) => {
   const [media, setMedia] = useState<MovieSearchProps[]>([]);
+
+  useEffect(() => {
+    initialRequest(setMedia);
+  }, []);
 
   return (
     <ContextHome.Provider value={{ media, setMedia }}>

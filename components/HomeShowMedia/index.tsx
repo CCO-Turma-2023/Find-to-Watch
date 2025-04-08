@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { View, Text, Pressable, TextInput, Image } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  Image,
+  ScrollView,
+} from "react-native";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 
 interface ShowMediaProps {
@@ -8,22 +15,26 @@ interface ShowMediaProps {
 
 export default function ShowMedia({ medias }: ShowMediaProps) {
   return (
-    <View>
+    <ScrollView
+      horizontal={true}
+      className="flex w-full flex-row"
+      showsHorizontalScrollIndicator={false}
+    >
       {medias?.length > 0 &&
         medias.map((media, index) => (
-          <View key={index} className="mb-4 flex items-center p-4">
+          <View key={index} className="mb-4 flex p-1">
             {media.poster_path && (
               <Image
                 source={{
                   uri: `https://image.tmdb.org/t/p/original${media.poster_path}`,
                 }}
-                style={{ width: 200, height: 300 }}
+                className="h-36 w-24"
               />
             )}
-            <Text className="text-center text-lg font-bold">{media.title}</Text>
-            <Text className="text-center">{media.overview}</Text>
+            {/* <Text className="text-center text-lg font-bold">{media.title}</Text>
+            <Text className="text-center">{media.overview}</Text> */}
           </View>
         ))}
-    </View>
+    </ScrollView>
   );
 }
