@@ -6,7 +6,7 @@ export default function Home() {
   const { media } = useContextHome();
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
-      <Text className="pl-2 text-lg font-semibold text-white">Lançamentos</Text>
+      <Text className="pl-2 text-lg font-semibold text-white">Em Cartaz</Text>
       <ShowMedia medias={media}></ShowMedia>
       <Text className="pl-2 text-lg font-semibold text-white">Drama</Text>
       <ShowMedia medias={media}></ShowMedia>
