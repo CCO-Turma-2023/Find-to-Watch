@@ -1,10 +1,10 @@
 import axios from "axios";
 import { api, options } from "./api";
 import { MovieSearchProps } from "@/interfaces/search-interface";
-import React from "react";
+import React, { useState } from "react";
+import { useContextHome } from "@/contexts/ContextHome";
 
 export const requestContents = async (
-  
   mediaSearch: string,
   setMedias: React.Dispatch<React.SetStateAction<MovieSearchProps[]>>,
 ) => {
@@ -24,17 +24,15 @@ export const requestContents = async (
   }
 };
 
-export const initialRequest = async (
-  setMedias: React.Dispatch<React.SetStateAction<MovieSearchProps[]>>,
-) => {
+export const initialRequest = async (): Promise<MovieSearchProps[]> => {
   try {
     const NowPlaying = await api.get(
       "3/movie/now_playing?language=pt-br&page=1",
       options,
     );
-    console.log(NowPlaying);
-    setMedias([...NowPlaying.data.results]);
+    return NowPlaying.data.results;
   } catch (error) {
     console.error("Erro ao buscar filmes:", error);
+    return []; // Retorna array vazio se der erro
   }
 };

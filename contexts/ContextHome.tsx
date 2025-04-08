@@ -9,17 +9,22 @@ import React, {
 } from "react";
 
 interface ContextHomeType {
-  media: MovieSearchProps[];
-  setMedia: React.Dispatch<React.SetStateAction<MovieSearchProps[]>>;
+  media: MovieSearchProps[][];
+  setMedia: React.Dispatch<React.SetStateAction<MovieSearchProps[][]>>;
 }
 
 const ContextHome = createContext<ContextHomeType | undefined>(undefined);
 
 export const ProviderHome = ({ children }: { children: ReactNode }) => {
-  const [media, setMedia] = useState<MovieSearchProps[]>([]);
+  const [media, setMedia] = useState<MovieSearchProps[][]>([]);
 
   useEffect(() => {
-    initialRequest(setMedia);
+    const fetchData = async () => {
+      const nowPlaying = await initialRequest();
+      setMedia([nowPlaying]);
+    };
+
+    fetchData();
   }, []);
 
   return (
