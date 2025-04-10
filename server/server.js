@@ -1,9 +1,49 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
+const axios = require("axios");
+const cheerio = require("cheerio");
 
 const app = express();
 app.use(cors());
+
+app.get("/chama2", async (req, res) => {
+  axios.get("https://www.adorocinema.com/filmes/filme-227463/programacao/?cgeocode=293136")
+  .then(response => {
+    const html = response.data;
+    const $ = cheerio.load(html);
+    
+    const dataLocalizations = [];
+
+    $("ul.mdl-more li.mdl-more-li a.mdl-more-item.js-set-localization").each((i, el) => {
+      const dataLoc = $(el).attr("data-localization");
+      if (dataLoc) {
+        dataLocalizations.push(JSON.parse(dataLoc)); 
+      }
+    });
+
+    console.log(dataLocalizations);
+  })
+  .catch(err => {
+    console.error("Erro ao carregar a página:", err);
+  });
+});
+
+
+app.get("/chama", async (req, res) => {
+  try {
+    console.log("oi");
+    const response = await axios.get("https://www.adorocinema.com/filmes/filme-1000019130/programacao/?cgeocode=293136");
+
+    console.log(response.data)
+
+
+    res.send(response.data); // <-- aqui está o fix
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error.message);
+    res.status(500).send("Erro ao buscar dados");
+  }
+});
 
 app.get("/get-html", async (req, res) => {
   const { search } = req.query;
@@ -44,7 +84,7 @@ app.get("/get-html", async (req, res) => {
         return [
           {
             titulo,
-            link: href ? `https://www.adorocinema.com${href}` : null,
+            link: href ? `https://www.adorocinema.com${href}programacao` : null,
           },
         ];
       }

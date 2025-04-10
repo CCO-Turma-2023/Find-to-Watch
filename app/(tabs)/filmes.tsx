@@ -1,7 +1,7 @@
 import { Text, View, Pressable } from "react-native";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import handlePress from "@/services/scrap";
+
 
 export default function Filmes() {
   const [html, setHtml] = useState("");
@@ -11,9 +11,6 @@ export default function Filmes() {
       <View>
         <Text className="text-white">Filmes aparecerão aqui</Text>
       </View>
-      <Pressable onPress={handlePress}>
-        <Text className="text-white">Press</Text>
-      </Pressable>
     </View>
   );
 }

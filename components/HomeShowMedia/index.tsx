@@ -26,7 +26,7 @@ export default function ShowMedia({ medias, horizontal }: ShowMediaProps) {
       {medias?.length > 0 &&
         medias.map((media, index) => (
           <View key={index} className="mb-2 flex p-1">
-              <Link href={{ pathname: "/content/[id]", params: { id: media.id} }}>
+              <Link href={{ pathname: "/content/[id]", params: { id: `${media.id}${media.movie === true ? 1 : 0}` } }}>
               {media.poster_path && (
                 <Image
                   source={{

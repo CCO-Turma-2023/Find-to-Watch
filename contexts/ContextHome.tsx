@@ -20,10 +20,10 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const nowPlaying = await initialRequest();
-      setMedia([nowPlaying]);
+      const categories = await initialRequest();
+      setMedia(categories);
     };
-
+  
     fetchData();
   }, []);
 
