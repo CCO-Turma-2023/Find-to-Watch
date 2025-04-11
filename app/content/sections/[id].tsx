@@ -9,12 +9,10 @@ import { CitiesProps } from '@/interfaces/cities-interface';
 export default function Section() {
   const { id } = useLocalSearchParams();
 
-  // Regiões
   const [regioes, setRegioes] = useState<RegioesProps[]>([]);
   const [openRegiao, setOpenRegiao] = useState(false);
   const [valueRegiao, setValueRegiao] = useState<string | null>(null);
 
-  // Cidades
   const [cidades, setCidades] = useState<CitiesProps[]>([]);
   const [openCidade, setOpenCidade] = useState(false);
   const [valueCidade, setValueCidade] = useState<string | null>(null);
@@ -28,7 +26,6 @@ export default function Section() {
     fetchRegioes();
   }, [id]);
 
-  // Busca cidades ao mudar valor da região
   useEffect(() => {
     const fetchCidades = async () => {
       if (!valueRegiao || !id) return;
