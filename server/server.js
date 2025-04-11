@@ -1,5 +1,4 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
 const cors = require("cors");
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -7,8 +6,63 @@ const cheerio = require("cheerio");
 const app = express();
 app.use(cors());
 
-app.get("/chama2", async (req, res) => {
-  axios.get("https://www.adorocinema.com/filmes/filme-227463/programacao/?cgeocode=293136")
+app.get("/get-regioes", async (req, res) => {
+  const { search } = req.query;
+
+  try {
+    const response = await axios.get(`https://www.adorocinema.com/filmes/filme-${search}/programacao/`);
+    const html = response.data;
+    const $ = cheerio.load(html);
+
+    const regioes = [];
+
+    // Seleciona todos os <li> dentro de listas com regiões
+    $("ul li.mdl-more-li").each((_, li) => {
+      const $li = $(li);
+
+      // Verifica se há uma âncora que não tem a classe 'js-set-localization'
+      const a = $li.find("a.mdl-more-item").filter((i, el) => !$(el).hasClass("js-set-localization"));
+      const span = $li.find("span.mdl-more-item.disabled");
+
+      if (a.length > 0) {
+        const el = a.first();
+        regioes.push({
+          nome: el.attr("title")?.trim() || el.text().trim(),
+          url: el.attr("href") || null,
+          ativo: true
+        });
+      } else if (span.length > 0) {
+        const el = span.first();
+        regioes.push({
+          nome: el.attr("title")?.trim() || el.text().trim(),
+          url: el.attr("href") || null,
+          ativo: false
+        });
+      }
+    });
+
+    const resultado = regioes.map(({ nome, url, ativo }) => {
+      const match = url.match(/cgeocode=(\d+)/);
+      return {
+        nome,
+        geocode: match ? match[1] : null,
+        ativo
+      };
+    });
+
+    res.send(resultado);
+  } catch (err) {
+    console.error("Erro ao buscar as regiões:", err.message);
+    res.status(500).json({ erro: "Erro ao buscar as regiões" });
+  }
+});
+
+
+app.get("/get-cities", async (req, res) => {
+
+  const {search, geocode} = req.query
+
+   axios.get(`https://www.adorocinema.com/filmes/filme-${search}/programacao/?cgeocode=${geocode}`)
   .then(response => {
     const html = response.data;
     const $ = cheerio.load(html);
@@ -22,83 +76,50 @@ app.get("/chama2", async (req, res) => {
       }
     });
 
-    console.log(dataLocalizations);
+    res.send(dataLocalizations)
   })
   .catch(err => {
     console.error("Erro ao carregar a página:", err);
   });
 });
 
-
-app.get("/chama", async (req, res) => {
-  try {
-    console.log("oi");
-    const response = await axios.get("https://www.adorocinema.com/filmes/filme-1000019130/programacao/?cgeocode=293136");
-
-    console.log(response.data)
-
-
-    res.send(response.data); // <-- aqui está o fix
-  } catch (error) {
-    console.error("Erro ao buscar dados:", error.message);
-    res.status(500).send("Erro ao buscar dados");
-  }
-});
-
 app.get("/get-html", async (req, res) => {
   const { search } = req.query;
+  const url = `https://www.adorocinema.com/pesquisar/?q=${encodeURIComponent(search)}`;
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
-
-  const page = await browser.newPage();
-
-  await page.setUserAgent(
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-  );
-
-  await page.setRequestInterception(true);
-  page.on("request", (req) => {
-    const blockedResources = ["image", "stylesheet", "font"];
-    if (blockedResources.includes(req.resourceType())) {
-      req.abort();
-    } else {
-      req.continue();
-    }
-  });
-
-  const formattedSearch = encodeURIComponent(search || "");
-  const url = `https://www.adorocinema.com/pesquisar/?q=${formattedSearch}`;
-
-  try {
-    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 });
-    await page.waitForSelector(".xXx.meta-title-link", { timeout: 5000 });
-
-    const resultados = await page.evaluate(() => {
-      const link = document.querySelector(".xXx.meta-title-link");
-      if (link) {
-        const titulo = link.textContent?.trim();
-        const href = link.getAttribute("href");
-        return [
-          {
-            titulo,
-            link: href ? `https://www.adorocinema.com${href}programacao` : null,
-          },
-        ];
+   try {
+    const { data } = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
       }
-      return [];
     });
 
-    res.send(resultados[0] || { error: "Nenhum resultado encontrado." });
-  } catch (error) {
-    console.error("Erro ao processar:", error);
-    res.status(500).send({ error: "Erro ao buscar resultados." });
-  } finally {
-    await browser.close();
+    const $ = cheerio.load(data);
+
+    const span = $("span.meta-title-link").first();
+
+    if (!span || !span.attr("class")) {
+      return res.status(404).json({ error: "Classe não encontrada" });
+    }
+
+    const encoded = span.attr("class").split(" ").find(c => c !== "meta-title-link");
+
+    const cleaned = encoded.replace(/ACr/g, "");
+  
+    const decoded = Buffer.from(cleaned, 'base64').toString('utf-8');
+
+    const match = decoded.match(/filme-(\d+)/);
+    
+    const codigo = match ? match[1] : null;
+    
+    res.send(codigo)
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
+
 
 app.listen(3000, () => {
   console.log("Servidor proxy rodando na porta 3000");

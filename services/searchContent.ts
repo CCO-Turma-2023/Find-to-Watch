@@ -160,7 +160,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
 
 
 export const RequestMediabyId = async (id : string | string[]) => {
-  console.log(id[-1]);
   if (id[id.length - 1] === "1")
   {
     const movie = await api.get(

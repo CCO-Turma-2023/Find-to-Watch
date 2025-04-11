@@ -3,6 +3,7 @@ import "../global.css";
 import { ProviderHome } from "@/contexts/ContextHome";
 
 export default function RootLayout() {
+  
   return (
       <ProviderHome>
         <Stack screenOptions={{headerShown: false}}>

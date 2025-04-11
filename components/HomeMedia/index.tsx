@@ -8,7 +8,7 @@ export default function Home() {
     <ScrollView
       contentContainerStyle={{ paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
-      className="bg-black"
+      className="bg-black py-2"
     >
       {/* Seção: Em Cartaz */}
       <View className="mb-4">
