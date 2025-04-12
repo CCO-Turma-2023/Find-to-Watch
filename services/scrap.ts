@@ -25,6 +25,8 @@ export async function getFilmCities(code:string | string[], geocode: string | st
       },
     });
 
+    console.log(response.data);
+
     return response.data
 
   } catch (error) {
@@ -45,4 +47,24 @@ export async function getRegioes(code:string | string[]) {
   } catch (error) {
     console.error("Erro ao buscar via backend:", error);
   }
+}
+
+export async function getTheaters (idMovie : string | string[], idCity : string | string[]) {
+
+  console.log("alo");
+
+  try {
+    const response = await axios.get("http://localhost:3000/get-theaters", {
+      params: {
+        idMovie,
+        idCity
+      },
+    });
+
+    return response.data
+
+  } catch (error) {
+    console.error("Erro ao buscar via backend:", error);
+  }
+
 }

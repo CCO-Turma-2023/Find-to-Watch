@@ -1,10 +1,12 @@
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { getFilmCities, getRegioes } from '@/services/scrap';
+import { getFilmCities, getRegioes, getTheaters } from '@/services/scrap';
 import { RegioesProps } from '@/interfaces/regioes-interface';
 import { CitiesProps } from '@/interfaces/cities-interface';
+import { TheatersSearchProps } from '@/interfaces/theater-interface';
+
 
 export default function Section() {
   const { id } = useLocalSearchParams();
@@ -17,6 +19,31 @@ export default function Section() {
   const [openCidade, setOpenCidade] = useState(false);
   const [valueCidade, setValueCidade] = useState<string | null>(null);
   const [cidadeSelecionada, setCidadeSelecionada] = useState<string | null>(null);
+  const [Theaters, setTheaters] = useState<TheatersSearchProps | null>(null);
+
+  useEffect(() => {
+    const fetchTheaters = async () => {
+
+      let idCity = null;
+
+      for (let i in cidades)
+      {
+        if (cidades[i].value == valueCidade)
+        {
+          idCity = cidades[i].id;
+          break;
+        }
+      }
+
+      const response = await getTheaters(id, String(idCity));
+        console.log(response)
+      setTheaters(response);
+    }
+    if (valueCidade)
+    {
+      fetchTheaters();
+    }
+  }, [valueCidade])
 
   useEffect(() => {
     const fetchRegioes = async () => {
@@ -24,7 +51,7 @@ export default function Section() {
       setRegioes(response.filter((r: RegioesProps) => r.ativo));
     };
     fetchRegioes();
-  }, [id]);
+  }, []);
 
   useEffect(() => {
     const fetchCidades = async () => {
@@ -41,8 +68,8 @@ export default function Section() {
     };
 
     fetchCidades();
-  }, [valueRegiao, id]);
-
+  }, [valueRegiao]);
+  
   return (
     <View className="flex-1 bg-black p-4">
       <Text className="text-white text-lg mb-4">Selecione uma região:</Text>
@@ -91,11 +118,46 @@ export default function Section() {
         </>
       )}
 
-      {cidadeSelecionada && (
-        <Text className="text-white mt-4 text-center">
-          Cidade selecionada: {cidadeSelecionada}
-        </Text>
-      )}
+{cidadeSelecionada && (
+  <ScrollView className="mt-4" showsVerticalScrollIndicator={true}>
+    <Text className="text-white text-center mb-4">
+      Cidade selecionada: {cidadeSelecionada}
+    </Text>
+
+    {Theaters && Array.isArray(Theaters) && (
+      <View className="space-y-6">
+        {Theaters.map((cinema: TheatersSearchProps, index: number) => (
+          <View key={index} className="bg-gray-800 p-4 rounded-lg">
+            <Text className="text-white text-xl font-bold mb-2">
+              {cinema.nome}
+            </Text>
+            {cinema.sessoes.map(
+              (
+                sessao: { descricao: string; horarios: string[] },
+                idx: number
+              ) => (
+                <View key={idx} className="mb-2">
+                  <Text className="text-gray-300 italic">{sessao.descricao}</Text>
+                  <View className="flex-row flex-wrap gap-2 mt-1">
+                    {sessao.horarios.map((horario: string, i: number) => (
+                      <Text
+                        key={i}
+                        className="text-white bg-gray-700 px-2 py-1 rounded-md text-sm mr-2 mb-2"
+                      >
+                        {horario}
+                      </Text>
+                    ))}
+                  </View>
+                </View>
+              )
+            )}
+          </View>
+        ))}
+      </View>
+    )}
+  </ScrollView>
+)}
+
     </View>
   );
 }
