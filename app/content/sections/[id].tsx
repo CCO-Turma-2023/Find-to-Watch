@@ -118,46 +118,42 @@ export default function Section() {
         </>
       )}
 
-{cidadeSelecionada && (
-  <ScrollView className="mt-4" showsVerticalScrollIndicator={true}>
-    <Text className="text-white text-center mb-4">
-      Cidade selecionada: {cidadeSelecionada}
-    </Text>
-
-    {Theaters && Array.isArray(Theaters) && (
-      <View className="space-y-6">
-        {Theaters.map((cinema: TheatersSearchProps, index: number) => (
-          <View key={index} className="bg-gray-800 p-4 rounded-lg">
-            <Text className="text-white text-xl font-bold mb-2">
-              {cinema.nome}
-            </Text>
-            {cinema.sessoes.map(
-              (
-                sessao: { descricao: string; horarios: string[] },
-                idx: number
-              ) => (
-                <View key={idx} className="mb-2">
-                  <Text className="text-gray-300 italic">{sessao.descricao}</Text>
-                  <View className="flex-row flex-wrap gap-2 mt-1">
-                    {sessao.horarios.map((horario: string, i: number) => (
-                      <Text
-                        key={i}
-                        className="text-white bg-gray-700 px-2 py-1 rounded-md text-sm mr-2 mb-2"
-                      >
-                        {horario}
-                      </Text>
-                    ))}
-                  </View>
+      {cidadeSelecionada && (
+        <ScrollView className="mt-4" showsVerticalScrollIndicator={true}>
+          {Theaters && Array.isArray(Theaters) && (
+            <View className="space-y-6">
+              {Theaters.map((cinema: TheatersSearchProps, index: number) => (
+                <View key={index} className="bg-gray-800 p-4 rounded-lg">
+                  <Text className="text-white text-xl font-bold mb-2">
+                    {cinema.nome}
+                  </Text>
+                  {cinema.sessoes.map(
+                    (
+                      sessao: { descricao: string; horarios: string[] },
+                      idx: number
+                    ) => (
+                      <View key={idx} className="mb-2">
+                        <Text className="text-gray-300 italic">{sessao.descricao}</Text>
+                        <View className="flex-row flex-wrap gap-2 mt-1">
+                          {sessao.horarios.map((horario: string, i: number) => (
+                            <Text
+                              key={i}
+                              className="text-white bg-gray-700 px-2 py-1 rounded-md text-sm mr-2 mb-2"
+                            >
+                              {horario}
+                            </Text>
+                          ))}
+                        </View>
+                      </View>
+                    )
+                  )}
                 </View>
-              )
-            )}
-          </View>
-        ))}
-      </View>
-    )}
-  </ScrollView>
-)}
+              ))}
+            </View>
+          )}
+        </ScrollView>
+      )}
 
-    </View>
+  </View>
   );
 }

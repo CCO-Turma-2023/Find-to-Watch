@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const fs = require('fs');
 const cheerio = require("cheerio");
 
 const app = express();
@@ -10,13 +11,12 @@ app.use(cors());
 app.get("/get-theaters", async (req, res) => {
   const { idMovie, idCity } = req.query;
 
-  console.log(idMovie, idCity);
-
   try {
     const response = await axios.get(`https://www.adorocinema.com/filmes/filme-${idMovie}/programacao/em-torno-${idCity}/#shwt_date=2025-04-11`);
+
     const html = response.data;
+
     const $ = cheerio.load(html);
-    console.log("Cheguei aaa")
 
     const cinemas = [];
     
@@ -24,19 +24,19 @@ app.get("/get-theaters", async (req, res) => {
       const $cinema = $(el);
     
       const nomeCinema = $cinema.find('.meta-theater-title .title a').text().trim();
-    
+
       const sessoes = [];
     
       $cinema.find('.showtimes-version').each((_, sessaoEl) => {
         const $sessao = $(sessaoEl);
+
+        const descricao = $sessao.find('.text').text().replace(/\s+/g, ' ').trim();
     
-        // Data e tipo de sessão
-        const descricao = $sessao.find('.text').text().trim();
-    
-        // Horários
         const horarios = [];
-        $sessao.find('.showtimes-hour-item-value').each((_, horarioEl) => {
-          horarios.push($(horarioEl).text().trim());
+
+        $sessao.find('.showtimes-hour-item-value, .showtimes-hours-item-value').each((_, horarioEl) => {
+          const horario = $(horarioEl).text().trim();
+          horarios.push(horario);
         });
     
         sessoes.push({
@@ -56,9 +56,7 @@ app.get("/get-theaters", async (req, res) => {
     console.error("Erro ao buscar as regiões:", err.message);
     res.status(500).json({ erro: "Erro ao buscar as regiões" });
   }
-
 })
-
 
 app.get("/get-regioes", async (req, res) => {
   const { search } = req.query;

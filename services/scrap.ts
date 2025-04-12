@@ -8,8 +8,6 @@ export async function getFilmId(title: string | undefined) {
       },
     });
 
-    console.log(code.data)
-
     return code.data
 
   } catch (error) {
@@ -24,8 +22,6 @@ export async function getFilmCities(code:string | string[], geocode: string | st
         search: code, geocode
       },
     });
-
-    console.log(response.data);
 
     return response.data
 
@@ -51,10 +47,8 @@ export async function getRegioes(code:string | string[]) {
 
 export async function getTheaters (idMovie : string | string[], idCity : string | string[]) {
 
-  console.log("alo");
-
   try {
-    const response = await axios.get("http://localhost:3000/get-theaters", {
+    const response = await axios.get("https://server-find-to-watch.vercel.app/api/get-theaters", {
       params: {
         idMovie,
         idCity

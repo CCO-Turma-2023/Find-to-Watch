@@ -33,7 +33,6 @@ export default function Search(){
                 />
             </View>
 
-        
             {media && media.length > 0 ? (
                 <View className="flex-1">
                     <Text className="text-base text-white mb-2">Resultados da busca por <Text className="font-bold">{busca}</Text>:</Text>

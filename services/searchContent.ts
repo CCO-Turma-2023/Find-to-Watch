@@ -13,16 +13,6 @@ export const requestContents = async (
     const resp = await api.get(`3/search/movie?${defaultUrl}`, options);
     const resp2 = await api.get(`3/search/tv?${defaultUrl}`, options);
 
-    for (let i in resp2.data.results) {
-      resp2.data.results[i]["title"] = resp2.data.results[i]["name"];
-      delete resp2.data.results[i]["nome"];
-      resp2.data.results[i]["movie"] = false;
-    }
-
-    for (let i in resp.data.results) {
-      resp.data.results[i]["movie"] = true;
-    }
-
     setMedias([...resp.data.results, ...resp2.data.results]);
   } catch (error) {
     console.error("Erro ao buscar filmes:", error);
@@ -37,9 +27,10 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options, 
     );
 
-    for (let i in nowPlaying.data.results) {
-      nowPlaying.data.results[i]["movie"] = true;
-    }
+    const trending = await api.get(
+      "3/trending/all/day?language=pt-BR",
+      options, 
+    );
 
     const actionMovie = await api.get(
       "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=28",
@@ -51,9 +42,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options,
     );
 
-    for (let i in actionMovie.data.results) {
-      actionMovie.data.results[i]["movie"] = true;
-    }
 
     // intercala os resultados entre filmes e séries
     const actionMovies = actionMovie.data.results;
@@ -75,10 +63,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options,
     );
 
-    for (let i in dramaMovie.data.results) {
-      dramaMovie.data.results[i]["movie"] = true;
-    }
-
     // intercala os resultados entre filmes e séries
     const dramaMovies = dramaMovie.data.results;
     const dramaTVShows = dramaTVShow.data.results;
@@ -98,10 +82,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=35",
       options,
     );
-
-    for (let i in comedyMovie.data.results) {
-      comedyMovie.data.results[i]["movie"] = true;
-    }
 
     // intercala os resultados entre filmes e séries
     const comedyMovies = comedyMovie.data.results;
@@ -123,10 +103,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options,
     );
 
-    for (let i in animationMovie.data.results) {
-      animationMovie.data.results[i]["movie"] = true;
-    }
-
     // intercala os resultados entre filmes e séries
     const animationMovies = animationMovie.data.results;
     const animationTVShows = animationTVShow.data.results;
@@ -146,10 +122,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=99",
       options,
     );
-
-    for (let i in documentaryMovie.data.results) {
-      documentaryMovie.data.results[i]["movie"] = true;
-    }
 
     // intercala os resultados entre filmes e séries
     const documentaryMovies = documentaryMovie.data.results;
@@ -171,10 +143,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options,
     );
 
-    for (let i in terrorMovie.data.results) {
-      terrorMovie.data.results[i]["movie"] = true;
-    }
-
     // intercala os resultados entre filmes e séries
     const terrorMovies = terrorMovie.data.results;
     const terrorTVShows = terrorTVShow.data.results;
@@ -194,10 +162,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10749",
       options,
     );
-
-    for (let i in romanceMovie.data.results) {
-      romanceMovie.data.results[i]["movie"] = true;
-    }
 
     // intercala os resultados entre filmes e séries
     const romanceMovies = romanceMovie.data.results;
@@ -219,10 +183,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options,
     );
 
-    for (let i in scienceFictionMovie.data.results) {
-      scienceFictionMovie.data.results[i]["movie"] = true;
-    }
-
     // intercala os resultados entre filmes e séries
     const scienceFictionMovies = scienceFictionMovie.data.results;
     const scienceFictionTVShows = scienceFictionTVShow.data.results;
@@ -242,10 +202,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10402",
       options,
     );
-
-    for (let i in musicalMovie.data.results) {
-      musicalMovie.data.results[i]["movie"] = true;
-    }
 
     // intercala os resultados entre filmes e séries
     const musicalMovies = musicalMovie.data.results;
@@ -267,10 +223,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options,
     );
 
-    for (let i in historyMovie.data.results) {
-      historyMovie.data.results[i]["movie"] = true;
-    }
-
     // intercala os resultados entre filmes e séries
     const historyMovies = historyMovie.data.results;
     const historyTVShows = historyTVShow.data.results;
@@ -283,7 +235,7 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
 
     // Filtra os filmes do gênero, removendo os que também estão em cartaz:
     const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
-
+    const trendingFiltered = trending.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
     const actionFiltered = action.filter((movie: any) => !nowPlayingIds.has(movie.id));
     const dramaFiltered = drama.filter((movie: any) => !nowPlayingIds.has(movie.id));
     const comedyFiltered = comedy.filter((movie: any) => !nowPlayingIds.has(movie.id));
@@ -297,6 +249,7 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
 
     return [
       nowPlaying.data.results,
+      trendingFiltered,
       actionFiltered,
       dramaFiltered,
       comedyFiltered,
@@ -322,8 +275,6 @@ export const RequestMediabyId = async (id : string | string[]) => {
       `3/movie/${id.slice(0, -1)}?language=pt-BR`,
       options, 
     );
-
-    movie.data["movie"] = true;
   
     return movie.data;
   }
@@ -332,10 +283,6 @@ export const RequestMediabyId = async (id : string | string[]) => {
     `3/tv/${id.slice(0, -1)}?language=pt-BR`,
     options, 
   );
-
-  show.data["title"] = show.data["name"];
-  delete show.data["nome"];
-  show.data["movie"] = false;
 
   return show.data;
 }

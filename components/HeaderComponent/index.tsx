@@ -3,10 +3,9 @@ import { useState } from "react";
 import { View, Text, Pressable, TextInput, Image } from "react-native";
 import { Link } from "expo-router";
 import "./header.css";
-import logo from "@/assets/images/logo.png";
+import logo from "@/assets/images/logo.png"
 
 export default function Header() {
-  const [movieSearch, setMovieSearch] = useState("");
 
   return (
     <View className="backgroundHeader w-full">
