@@ -28,7 +28,7 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
     );
 
     const trending = await api.get(
-      "3/trending/all/day?language=pt-BR",
+      "3/trending/all/day?language=pt-BR&region=BR&page=1",
       options, 
     );
 
@@ -233,8 +233,9 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       if (historyTVShows[i]) history.push(historyTVShows[i]);
     }
 
-    // Filtra os filmes do gênero, removendo os que também estão em cartaz:
+    // Filtra os filmes e séries do gênero em específico, removendo os que estão em cartaz:
     const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
+
     const trendingFiltered = trending.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
     const actionFiltered = action.filter((movie: any) => !nowPlayingIds.has(movie.id));
     const dramaFiltered = drama.filter((movie: any) => !nowPlayingIds.has(movie.id));
@@ -260,6 +261,102 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       scienceFictionFiltered,
       musicalFiltered,
       historyFiltered,
+    ];
+  } catch (error) {
+    console.error("Erro ao buscar filmes ou series:", error);
+    return [[], [], [], [], []]; // Retorna array vazio se der erro
+  }
+};
+
+export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
+  try {
+    const nowPlaying = await api.get(
+      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
+      options, 
+    );
+
+    const trending = await api.get(
+      "3/trending/all/day?language=pt-BR&region=BR&page=1",
+      options, 
+    );
+
+    const actionMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=28",
+      options, 
+    );
+
+    const dramaMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=18",
+      options, 
+    );
+
+    const comedyMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=35",
+      options, 
+    );
+
+    const animationMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=16",
+      options, 
+    );
+
+    const documentaryMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=99",
+      options, 
+    );
+
+    const terrorMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=27",
+      options, 
+    );
+
+    const romanceMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10749",
+      options, 
+    );
+
+    const scienceFictionMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=878",
+      options, 
+    );
+
+    const musicalMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10402",
+      options, 
+    );
+
+    const historyMovie = await api.get(
+      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=36",
+      options, 
+    );
+
+    // Filtra os filmes e séries do gênero em específico, removendo os que estão em cartaz:
+    const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
+
+    const trendingFiltered = trending.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const actionMovieFiltered = actionMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const dramaMovieFiltered = dramaMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const comedyMovieFiltered = comedyMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const animationMovieFiltered = animationMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const documentaryMovieFiltered = documentaryMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const terrorMovieFiltered = terrorMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const romanceMovieFiltered = romanceMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const scienceFictionMovieFiltered = scienceFictionMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const musicalMovieFiltered = musicalMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const historyMovieFiltered = historyMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+
+    return [
+      trendingFiltered,
+      actionMovieFiltered,
+      dramaMovieFiltered,
+      comedyMovieFiltered,
+      animationMovieFiltered,
+      documentaryMovieFiltered,
+      terrorMovieFiltered,
+      romanceMovieFiltered,
+      scienceFictionMovieFiltered,
+      musicalMovieFiltered,
+      historyMovieFiltered,
     ];
   } catch (error) {
     console.error("Erro ao buscar filmes:", error);
