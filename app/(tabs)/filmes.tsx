@@ -1,12 +1,12 @@
-import { Text, View, Pressable } from "react-native";
+import { View } from "react-native";
+import { useEffect } from "react";
+import Movie from "../../components/MovieMedia";
 
-export default function Filmes() {
+export default function Movies() {
 
   return (
-    <View className="flex-1 bg-black">
-      <View>
-        <Text className="text-white">Filmes aparecerão aqui</Text>
-      </View>
+    <View className="bg-black flex-1">
+      <Movie />
     </View>
   );
 }
