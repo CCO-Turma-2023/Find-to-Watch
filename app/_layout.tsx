@@ -8,7 +8,6 @@ export default function RootLayout() {
       <ProviderHome>
         <Stack screenOptions={{headerShown: false}}>
           <Stack.Screen name="(tabs)"></Stack.Screen>
-          <Stack.Screen name="content"></Stack.Screen>
           <Stack.Screen name="search"></Stack.Screen>
         </Stack>
       </ProviderHome>

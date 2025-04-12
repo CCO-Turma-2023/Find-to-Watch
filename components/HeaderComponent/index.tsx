@@ -1,6 +1,5 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { useState } from "react";
-import { View, Text, Pressable, TextInput, Image } from "react-native";
+import { View,  Image } from "react-native";
 import { Link } from "expo-router";
 import "./header.css";
 import logo from "@/assets/images/logo.png"

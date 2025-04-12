@@ -3,14 +3,20 @@
 # dependencies
 node_modules/
 
+# Native folders
+android/
+ios/
+
 # Expo
 .vscode/
 .expo/
+.expo-shared/
+
 dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# Native credentials
 *.orig.*
 *.jks
 *.p8
@@ -32,9 +38,13 @@ yarn-error.*
 
 # local env files
 .env*.local
-token.json
 
 # typescript
 *.tsbuildinfo
 
+# EAS builds
+*.apk
+*.aab
+
+# example file
 app-example
