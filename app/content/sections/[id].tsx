@@ -1,12 +1,12 @@
-import { View, Text, ScrollView } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { getFilmCities, getRegioes, getTheaters } from '@/services/scrap';
-import { RegioesProps } from '@/interfaces/regioes-interface';
-import { CitiesProps } from '@/interfaces/cities-interface';
-import { TheatersSearchProps } from '@/interfaces/theater-interface';
-
+import { View, Text, ScrollView, Pressable } from "react-native";
+import DropDownPicker from "react-native-dropdown-picker";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { getFilmCities, getRegioes, getTheaters } from "@/services/scrap";
+import { RegioesProps } from "@/interfaces/regioes-interface";
+import { CitiesProps } from "@/interfaces/cities-interface";
+import { TheatersSearchProps } from "@/interfaces/theater-interface";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Section() {
   const { id } = useLocalSearchParams();
@@ -18,32 +18,30 @@ export default function Section() {
   const [cidades, setCidades] = useState<CitiesProps[]>([]);
   const [openCidade, setOpenCidade] = useState(false);
   const [valueCidade, setValueCidade] = useState<string | null>(null);
-  const [cidadeSelecionada, setCidadeSelecionada] = useState<string | null>(null);
+  const [cidadeSelecionada, setCidadeSelecionada] = useState<string | null>(
+    null,
+  );
   const [Theaters, setTheaters] = useState<TheatersSearchProps | null>(null);
 
   useEffect(() => {
     const fetchTheaters = async () => {
-
       let idCity = null;
 
-      for (let i in cidades)
-      {
-        if (cidades[i].value == valueCidade)
-        {
+      for (let i in cidades) {
+        if (cidades[i].value == valueCidade) {
           idCity = cidades[i].id;
           break;
         }
       }
 
       const response = await getTheaters(id, String(idCity));
-        console.log(response)
+      console.log(response);
       setTheaters(response);
-    }
-    if (valueCidade)
-    {
+    };
+    if (valueCidade) {
       fetchTheaters();
     }
-  }, [valueCidade])
+  }, [valueCidade]);
 
   useEffect(() => {
     const fetchRegioes = async () => {
@@ -63,16 +61,19 @@ export default function Section() {
         const response = await getFilmCities(String(id), valueRegiao);
         setCidades(response);
       } catch (error) {
-        console.error('Erro ao buscar cidades:', error);
+        console.error("Erro ao buscar cidades:", error);
       }
     };
 
     fetchCidades();
   }, [valueRegiao]);
-  
+
   return (
     <View className="flex-1 bg-black p-4">
-      <Text className="text-white text-lg mb-4">Selecione uma região:</Text>
+      <Pressable onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={30} color="#ffffff" />
+      </Pressable>
+      <Text className="mb-4 text-lg text-white">Selecione uma região:</Text>
 
       <DropDownPicker
         open={openRegiao}
@@ -81,20 +82,22 @@ export default function Section() {
         setValue={setValueRegiao}
         items={regioes.map((regiao) => ({
           label: regiao.nome,
-          value: regiao.geocode, 
+          value: regiao.geocode,
         }))}
         placeholder="Escolha uma região"
-        style={{ backgroundColor: '#1f2937', borderColor: '#374151' }}
-        dropDownContainerStyle={{ backgroundColor: '#1f2937' }}
-        textStyle={{ color: 'white' }}
-        placeholderStyle={{ color: '#9ca3af' }}
+        style={{ backgroundColor: "#1f2937", borderColor: "#374151" }}
+        dropDownContainerStyle={{ backgroundColor: "#1f2937" }}
+        textStyle={{ color: "white" }}
+        placeholderStyle={{ color: "#9ca3af" }}
         zIndex={3000}
         zIndexInverse={1000}
       />
 
       {valueRegiao && cidades.length > 0 && (
         <>
-          <Text className="text-white text-lg mt-6 mb-2">Selecione uma cidade:</Text>
+          <Text className="mb-2 mt-6 text-lg text-white">
+            Selecione uma cidade:
+          </Text>
           <DropDownPicker
             open={openCidade}
             setOpen={setOpenCidade}
@@ -108,10 +111,10 @@ export default function Section() {
               value: cidade.value,
             }))}
             placeholder="Escolha uma cidade"
-            style={{ backgroundColor: '#1f2937', borderColor: '#374151' }}
-            dropDownContainerStyle={{ backgroundColor: '#1f2937' }}
-            textStyle={{ color: 'white' }}
-            placeholderStyle={{ color: '#9ca3af' }}
+            style={{ backgroundColor: "#1f2937", borderColor: "#374151" }}
+            dropDownContainerStyle={{ backgroundColor: "#1f2937" }}
+            textStyle={{ color: "white" }}
+            placeholderStyle={{ color: "#9ca3af" }}
             zIndex={2000}
             zIndexInverse={2000}
           />
@@ -123,29 +126,31 @@ export default function Section() {
           {Theaters && Array.isArray(Theaters) && (
             <View className="space-y-6">
               {Theaters.map((cinema: TheatersSearchProps, index: number) => (
-                <View key={index} className="bg-gray-800 p-4 rounded-lg">
-                  <Text className="text-white text-xl font-bold mb-2">
+                <View key={index} className="rounded-lg bg-gray-800 p-4">
+                  <Text className="mb-2 text-xl font-bold text-white">
                     {cinema.nome}
                   </Text>
                   {cinema.sessoes.map(
                     (
                       sessao: { descricao: string; horarios: string[] },
-                      idx: number
+                      idx: number,
                     ) => (
                       <View key={idx} className="mb-2">
-                        <Text className="text-gray-300 italic">{sessao.descricao}</Text>
-                        <View className="flex-row flex-wrap gap-2 mt-1">
+                        <Text className="italic text-gray-300">
+                          {sessao.descricao}
+                        </Text>
+                        <View className="mt-1 flex-row flex-wrap gap-2">
                           {sessao.horarios.map((horario: string, i: number) => (
                             <Text
                               key={i}
-                              className="text-white bg-gray-700 px-2 py-1 rounded-md text-sm mr-2 mb-2"
+                              className="mb-2 mr-2 rounded-md bg-gray-700 px-2 py-1 text-sm text-white"
                             >
                               {horario}
                             </Text>
                           ))}
                         </View>
                       </View>
-                    )
+                    ),
                   )}
                 </View>
               ))}
@@ -153,7 +158,6 @@ export default function Section() {
           )}
         </ScrollView>
       )}
-
-  </View>
+    </View>
   );
 }
