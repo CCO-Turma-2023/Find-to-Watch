@@ -6,7 +6,6 @@ import { useContextHome } from "@/contexts/ContextHome";
 import { RequestMediabyId } from "@/services/searchContent";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import { Ionicons } from "@expo/vector-icons";
-// Removed unused import for MaterialIcons
 
 export default function Filmes() {
   const { id } = useLocalSearchParams();
@@ -60,14 +59,14 @@ export default function Filmes() {
       </Pressable>
 
       <Image
-        source={{
-          uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
-        }}
-        style={{
-          width: "100%",
-          height: 300,
-          resizeMode: "contain", // Ajusta a imagem mantendo a proporção sem cortar
-        }}
+      source={{
+        uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
+      }}
+      style={{
+        width: "100%",
+        height: 300,
+      }}
+      resizeMode="contain"
       />
 
       {media && media.length > 0 && (

@@ -1,8 +1,6 @@
-import axios from "axios";
 import { api, options } from "./api";
 import { MovieSearchProps } from "@/interfaces/search-interface";
-import React, { useState } from "react";
-import { useContextHome } from "@/contexts/ContextHome";
+import React from "react";
 
 export const requestContents = async (
   mediaSearch: string,

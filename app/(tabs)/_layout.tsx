@@ -1,5 +1,4 @@
 import { Tabs } from "expo-router";
-import { View } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ProviderHome } from "@/contexts/ContextHome";

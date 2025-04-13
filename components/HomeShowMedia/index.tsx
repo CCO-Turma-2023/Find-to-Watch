@@ -1,9 +1,5 @@
-import { useState } from "react";
 import {
   View,
-  Text,
-  Pressable,
-  TextInput,
   Image,
   ScrollView,
 } from "react-native";

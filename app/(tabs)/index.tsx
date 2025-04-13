@@ -1,5 +1,4 @@
 import {View} from "react-native";
-import { useEffect } from "react";
 import Home from "../../components/HomeMedia";
   
 export default function Index() {
