@@ -7,10 +7,11 @@ import { RegioesProps } from "@/interfaces/regioes-interface";
 import { CitiesProps } from "@/interfaces/cities-interface";
 import { TheatersSearchProps } from "@/interfaces/theater-interface";
 import { Ionicons } from "@expo/vector-icons";
-import { StatusBar } from "expo-status-bar";
+import CalendarSlider from "@/components/Calendar";
 
 export default function Section() {
   const { id } = useLocalSearchParams();
+  
 
   const [regioes, setRegioes] = useState<RegioesProps[]>([]);
   const [openRegiao, setOpenRegiao] = useState(false);
@@ -23,6 +24,7 @@ export default function Section() {
     null,
   );
   const [Theaters, setTheaters] = useState<TheatersSearchProps | null>(null);
+  const [data, setData] = useState("")
 
   useEffect(() => {
     const fetchTheaters = async () => {
@@ -34,15 +36,15 @@ export default function Section() {
           break;
         }
       }
-
-      const response = await getTheaters(id, String(idCity));
+      console.log(data)
+      const response = await getTheaters(id, String(idCity), data);
       console.log(response);
       setTheaters(response);
     };
     if (valueCidade) {
       fetchTheaters();
     }
-  }, [valueCidade]);
+  }, [valueCidade, data]);
 
   useEffect(() => {
     const fetchRegioes = async () => {
@@ -123,6 +125,10 @@ export default function Section() {
       )}
 
       {cidadeSelecionada && (
+        <>
+        <View className="w-full h-50">
+          <CalendarSlider onDateChange={setData}/>
+        </View>
         <ScrollView className="mt-4" showsVerticalScrollIndicator={true}>
           {Theaters && Array.isArray(Theaters) && (
             <View className="space-y-6">
@@ -158,6 +164,7 @@ export default function Section() {
             </View>
           )}
         </ScrollView>
+        </>
       )}
     </View>
   );

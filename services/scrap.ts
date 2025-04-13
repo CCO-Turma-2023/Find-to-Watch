@@ -45,13 +45,14 @@ export async function getRegioes(code:string | string[]) {
   }
 }
 
-export async function getTheaters (idMovie : string | string[], idCity : string | string[]) {
+export async function getTheaters (idMovie : string | string[], idCity : string | string[], data : string) {
 
   try {
     const response = await axios.get("https://server-find-to-watch.vercel.app/api/get-theaters", {
       params: {
         idMovie,
-        idCity
+        idCity, 
+        data
       },
     });
 
