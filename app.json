@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "my-app",
-    "slug": "my-app",
+    "name": "Find-to-Watch",
+    "slug": "Find-to-Watch",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "findtowatch",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -16,7 +16,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tiagofreis.myapp"
+      "package": "com.tiagofreis.FindtoWatch"
     },
     "web": {
       "bundler": "metro",
@@ -43,7 +43,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "450dea3b-0962-4703-83fc-a247daa0acad"
+        "projectId": "8cc0eb9b-860c-40ad-a7b2-15f235a16cc4"
       }
     }
   }

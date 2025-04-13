@@ -7,6 +7,7 @@ import { RegioesProps } from "@/interfaces/regioes-interface";
 import { CitiesProps } from "@/interfaces/cities-interface";
 import { TheatersSearchProps } from "@/interfaces/theater-interface";
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
 export default function Section() {
   const { id } = useLocalSearchParams();
@@ -69,7 +70,7 @@ export default function Section() {
   }, [valueRegiao]);
 
   return (
-    <View className="flex-1 bg-black p-4">
+    <View className="flex-1 bg-black p-2">
       <Pressable onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={30} color="#ffffff" />
       </Pressable>

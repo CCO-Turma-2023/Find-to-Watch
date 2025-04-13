@@ -13,7 +13,7 @@ export default function Header() {
       end={{ x: 1, y: 0 }}
       className="w-full"
     >
-      <View className="flex-row items-center justify-between p-1">
+      <View className="flex-row items-center justify-between">
         <View className="flex items-center justify-center">
           <Image
             source={logo}

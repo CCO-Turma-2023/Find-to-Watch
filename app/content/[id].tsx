@@ -6,12 +6,12 @@ import { useContextHome } from "@/contexts/ContextHome";
 import { RequestMediabyId } from "@/services/searchContent";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import { Ionicons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 
 export default function Filmes() {
+
   const { id } = useLocalSearchParams();
-  const [currentMovie, setCurrentMovie] = useState<MovieSearchProps | null>(
-    null,
-  );
+  const [currentMovie, setCurrentMovie] = useState<MovieSearchProps | null>(null);
   const [nowPlaying, setNowPlaying] = useState(false);
   const { media } = useContextHome();
 
@@ -53,20 +53,25 @@ export default function Filmes() {
   }, [media]);
 
   return (
-    <View className="flex flex-1 gap-3 bg-black p-2">
+    <View className="flex-1 gap-3 bg-black p-2">
+     
+      <StatusBar style="light" backgroundColor="black" translucent={false} />
+
+      
       <Pressable onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={30} color="#ffffff" />
       </Pressable>
 
+     
       <Image
-      source={{
-        uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
-      }}
-      style={{
-        width: "100%",
-        height: 300,
-      }}
-      resizeMode="contain"
+        source={{
+          uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
+        }}
+        style={{
+          width: "100%",
+          height: 300,
+        }}
+        resizeMode="contain"
       />
 
       {media && media.length > 0 && (
@@ -83,7 +88,6 @@ export default function Filmes() {
           {nowPlaying && (
             <Pressable className="flex w-full items-center" onPress={OnPress}>
               <Ionicons name="film" size={30} color="#ffffff" />
-
               <Text className="text-white">Sessões Disponíveis</Text>
             </Pressable>
           )}
