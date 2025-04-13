@@ -1,19 +1,28 @@
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { View,  Image } from "react-native";
+import { View, Image } from "react-native";
 import { Link } from "expo-router";
-import "./header.css";
-import logo from "@/assets/images/logo.png"
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { LinearGradient } from "expo-linear-gradient";
+import logo from "@/assets/images/logo.png";
+import icon from "@/assets/images/icon.png";
 
 export default function Header() {
-
   return (
-    <View className="backgroundHeader w-full">
+    <LinearGradient
+      colors={["rgba(2, 77, 191, 1)", "rgba(1, 36, 89, 1)"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      className="w-full"
+    >
       <View className="flex-row items-center justify-between p-1">
-        <View className="flex h-20 w-20 items-center justify-center">
+        <View className="flex items-center justify-center">
           <Image
             source={logo}
-            className="h-full max-h-full w-full max-w-full"
-          ></Image>
+            style={{
+              width: 82,  
+              height: 82,  
+            }}
+            resizeMode="contain"
+          />
         </View>
 
         <View className="flex flex-row gap-3 p-2">
@@ -23,16 +32,17 @@ export default function Header() {
           </Link>
 
           {/* Avatar */}
-          <View className="h-12 w-12 overflow-hidden rounded-full bg-white">
+          <View className="h-12 w-12 overflow-hidden rounded-full bg-white items-center justify-center">
             <Image
-              source={{
-                uri: `https://cdn.discordapp.com/attachments/1220349851007455255/1310675460941676624/the-famous-wet-owl-also-known-as-lamont-appears-to-be-a-v0-0awtil7kynr81.jpg?ex=67f56ca5&is=67f41b25&hm=3cbb2900252068d5460798b47686bec264352674d10cbc6e131882a9659a1f9e&`,
+              source={icon}
+              style={{
+                width: 104, 
+                height: 104,
               }}
-              className="h-full w-full"
             />
-          </View>
+        </View>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
