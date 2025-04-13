@@ -1,9 +1,9 @@
 import ShowMedia from "@/components/AllShowMedia";
-import { useContextMovie } from "@/contexts/ContextMovie";
+import { useContextTVShow } from "@/contexts/ContextTVShow";
 import { ScrollView, Text, View } from "react-native";
 
-export default function Movie() {
-  const { media } = useContextMovie();
+export default function TVShow() {
+  const { media } = useContextTVShow();
   return (
     <ScrollView
       contentContainerStyle={{ paddingBottom: 32 }}
@@ -18,7 +18,7 @@ export default function Movie() {
 
       {/* Seção: Ação */}
       <View>
-        <Text className="pl-2 text-lg font-semibold text-white">Ação</Text>
+        <Text className="pl-2 text-lg font-semibold text-white">Ação e Aventura</Text>
         <ShowMedia medias={media[1]} horizontal={true} />
       </View>
 
@@ -48,7 +48,7 @@ export default function Movie() {
 
       {/* Seção: Terror */}
       <View>
-        <Text className="pl-2 text-lg font-semibold text-white">Terror</Text>
+        <Text className="pl-2 text-lg font-semibold text-white">Suspense</Text>
         <ShowMedia medias={media[6]} horizontal={true} />
       </View>
 
@@ -64,22 +64,10 @@ export default function Movie() {
         <ShowMedia medias={media[8]} horizontal={true} />
       </View>
 
-      {/* Seção: Musical */}
-      <View>
-        <Text className="pl-2 text-lg font-semibold text-white">Musical</Text>
-        <ShowMedia medias={media[9]} horizontal={true} />
-      </View>
-
       {/* Seção: História */}
       <View>
         <Text className="pl-2 text-lg font-semibold text-white">História</Text>
-        <ShowMedia medias={media[10]} horizontal={true} />
-      </View>
-
-      {/* Seção: Suspense */}
-      <View>
-        <Text className="pl-2 text-lg font-semibold text-white">Suspense</Text>
-        <ShowMedia medias={media[11]} horizontal={true} />
+        <ShowMedia medias={media[9]} horizontal={true} />
       </View>
     </ScrollView>
   );

@@ -21,7 +21,6 @@ export const ProviderMovie = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchData = async () => {
       const categories = await initialRequestMovie();
-      console.log(categories);
       setMedia(categories);
     };
   

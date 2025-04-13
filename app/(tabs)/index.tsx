@@ -1,4 +1,4 @@
-import {View} from "react-native";
+import { View } from "react-native";
 import Home from "../../components/HomeMedia";
   
 export default function Index() {

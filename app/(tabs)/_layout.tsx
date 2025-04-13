@@ -3,12 +3,14 @@ import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ProviderHome } from "@/contexts/ContextHome";
 import { ProviderMovie } from "@/contexts/ContextMovie";
+import { ProviderTVShow } from "@/contexts/ContextTVShow";
 import Header from "@/components/HeaderComponent";
 
 export default function TabLayout() {
   return (
     <ProviderHome>
       <ProviderMovie>
+        <ProviderTVShow>
       <Header />
       <Tabs
         screenOptions={({ route }) => ({
@@ -33,38 +35,39 @@ export default function TabLayout() {
             marginVertical: 12,
           },
         })}
-      >
+        >
         <Tabs.Screen
           name="index"
           options={{
             title: "Home",
             tabBarIcon: () => <Feather name="home" size={20} color="white" />,
           }}
-        />
+          />
         <Tabs.Screen
-          name="filmes"
+          name="movies"
           options={{
             title: "Filmes",
             tabBarIcon: () => (
               <MaterialCommunityIcons name="movie" size={20} color="white" />
             ),
           }}
-        />
+          />
         <Tabs.Screen
-          name="series"
+          name="tvshow"
           options={{
             title: "Séries",
             tabBarIcon: () => <Feather name="tv" size={20} color="white" />,
           }}
-        />
+          />
         <Tabs.Screen
           name="cinema"
           options={{
             title: "Cinema",
             tabBarIcon: () => <Feather name="film" size={20} color="white" />,
           }}
-        />
+          />
       </Tabs>
+          </ProviderTVShow>
       </ProviderMovie>
     </ProviderHome>
   );
