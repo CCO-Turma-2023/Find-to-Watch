@@ -5,7 +5,7 @@ export default function Index() {
 
   return (
     <View className="bg-black flex-1">
-        <Home />
+      <Home />
     </View>
   );
 }

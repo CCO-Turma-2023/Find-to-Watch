@@ -2,11 +2,13 @@ import { Tabs } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { ProviderHome } from "@/contexts/ContextHome";
+import { ProviderMovie } from "@/contexts/ContextMovie";
 import Header from "@/components/HeaderComponent";
 
 export default function TabLayout() {
   return (
     <ProviderHome>
+      <ProviderMovie>
       <Header />
       <Tabs
         screenOptions={({ route }) => ({
@@ -63,6 +65,7 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
+      </ProviderMovie>
     </ProviderHome>
   );
 }
