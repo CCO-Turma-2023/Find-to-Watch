@@ -1,10 +1,13 @@
 import {TextInput, View, Text, ScrollView} from 'react-native'
-import { Link } from 'expo-router';
+import { router } from 'expo-router';
 import { requestContents } from "@/services/searchContent";
 import ShowMedia from "@/components/AllShowMedia";
 import { MovieSearchProps } from '@/interfaces/search-interface';
 import { useState } from 'react';
 import AntDesign from '@expo/vector-icons/AntDesign'
+import { StatusBar } from 'expo-status-bar';
+import { Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Search(){
     const [media, setMedia] = useState<MovieSearchProps[]>([]);
@@ -17,11 +20,11 @@ export default function Search(){
     
     return(
         <View className="flex flex-col flex-1 p-2 bg-black">
-            <View className="flex flex-row items-center mb-4">
-                <Link href="/">
-                    <AntDesign name="arrowleft" color={'white'} size={24} />
-                </Link>
-            </View>
+            <StatusBar style="light" backgroundColor="black" translucent={false} />
+
+            <Pressable className='mb-4' onPress={() => router.back()}>
+                <Ionicons name="arrow-back" size={30} color="#ffffff" />
+            </Pressable>
 
             <View className="flex flex-row gap-1 items-center rounded border border-gray-400 p-2 mb-4">
                 <AntDesign name="search1" color={'white'} size={20} />
