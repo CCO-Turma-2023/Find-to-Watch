@@ -29,7 +29,7 @@ export default function TVShow() {
       showsVerticalScrollIndicator={false}
       className="bg-black py-2"
       renderItem={({ item }) => {
-        const categoriaFilmes: MovieSearchProps[] = media[item.index]?.slice(0, 10) || []; // Limita a 10 itens
+        const categoriaFilmes: MovieSearchProps[] = media[item.index] || []; 
 
         return (
           <View className="mb-8">
