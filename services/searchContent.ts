@@ -17,462 +17,184 @@ export const requestContents = async (
   }
 };
 
+const fetchCategory = async (
+  mediaType: "movie" | "tv",
+  genreId: number,
+  maxLength: number
+): Promise<MovieSearchProps[]> => {
+  const resp = await api.get(
+    `3/discover/${mediaType}?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=${genreId}`,
+    options
+  );
+  return resp.data.results.slice(0, maxLength);
+};
+
+const fetchTrending = async (
+  mediaType: "movie" | "tv",
+  maxLength: number
+): Promise<MovieSearchProps[]> => {
+  const resp = await api.get(
+    `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=1`,
+    options
+  );
+  return resp.data.results.slice(0, maxLength);
+};
+
+const fetchIntercalatedCategory = async (
+  genreId: number,
+  maxLength: number
+): Promise<MovieSearchProps[]> => {
+  const movie = await fetchCategory("movie", genreId, maxLength);
+  const tv = await fetchCategory("tv", genreId, maxLength);
+  const result: MovieSearchProps[] = [];
+
+  for (let i = 0; i < maxLength; i++) {
+    if (movie[i]) result.push(movie[i]);
+    if (tv[i]) result.push(tv[i]);
+  }
+
+  return result;
+};
+
+const fetchIntercalatedTrending = async (
+  maxLength: number
+): Promise<MovieSearchProps[]> => {
+  const movie = await fetchTrending("movie", maxLength);
+  const tv = await fetchTrending("tv", maxLength);
+  const result: MovieSearchProps[] = [];
+
+  for (let i = 0; i < maxLength; i++) {
+    if (movie[i]) result.push(movie[i]);
+    if (tv[i]) result.push(tv[i]);
+  }
+
+  return result;
+};
+
+// 🔀 Mantém mistura de filmes + séries
 export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
+
     const nowPlaying = await api.get(
       "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options, 
+      options
     );
 
-    const trendingMovie = await api.get(
-      "3/trending/movie/day?language=pt-BR&region=BR&page=1",
-      options, 
-    );
+    const trending = await fetchIntercalatedTrending(maxLength);
+    const action = await fetchIntercalatedCategory(28, maxLength);
+    const drama = await fetchIntercalatedCategory(18, maxLength);
+    const comedy = await fetchIntercalatedCategory(35, maxLength);
+    const animation = await fetchIntercalatedCategory(16, maxLength);
+    const documentary = await fetchIntercalatedCategory(99, maxLength);
+    const terror = await fetchIntercalatedCategory(27, maxLength);
+    const romance = await fetchIntercalatedCategory(10749, maxLength);
+    const scienceFiction = await fetchIntercalatedCategory(878, maxLength);
+    const musical = await fetchIntercalatedCategory(10402, maxLength);
+    const history = await fetchIntercalatedCategory(36, maxLength);
 
-    const trendingTVShow = await api.get(
-      "3/trending/tv/day?language=pt-BR&region=BR&page=1",
-      options, 
-    );
-
-    // intercala os resultados entre filmes e séries
-    const trendingMovies = trendingMovie.data.results;
-    const trendingTVShows = trendingTVShow.data.results;
-    const trending = [];
-
+    const thrillerMovie = await fetchCategory("movie", 53, maxLength);
+    const thrillerTV = await fetchCategory("tv", 9648, maxLength);
+    const thriller: MovieSearchProps[] = [];
     for (let i = 0; i < maxLength; i++) {
-      if (trendingMovies[i]) trending.push(trendingMovies[i]);
-      if (trendingTVShows[i]) trending.push(trendingTVShows[i]);
+      if (thrillerMovie[i]) thriller.push(thrillerMovie[i]);
+      if (thrillerTV[i]) thriller.push(thrillerTV[i]);
     }
-
-    const actionMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=28",
-      options, 
-    );
-
-    const actionTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=28",
-      options,
-    );
-
-
-    // intercala os resultados entre filmes e séries
-    const actionMovies = actionMovie.data.results;
-    const actionTVShows = actionTVShow.data.results;
-    const action = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (actionMovies[i]) action.push(actionMovies[i]);
-      if (actionTVShows[i]) action.push(actionTVShows[i]);
-    }
-
-    const dramaMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=18",
-      options, 
-    );
-
-    const dramaTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=18",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const dramaMovies = dramaMovie.data.results;
-    const dramaTVShows = dramaTVShow.data.results;
-    const drama = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (dramaMovies[i]) drama.push(dramaMovies[i]);
-      if (dramaTVShows[i]) drama.push(dramaTVShows[i]);
-    }
-
-    const comedyMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=35",
-      options, 
-    );
-
-    const comedyTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=35",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const comedyMovies = comedyMovie.data.results;
-    const comedyTVShows = comedyTVShow.data.results;
-    const comedy = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (comedyMovies[i]) comedy.push(comedyMovies[i]);
-      if (comedyTVShows[i]) comedy.push(comedyTVShows[i]);
-    }
-
-    const animationMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=16",
-      options, 
-    );
-
-    const animationTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=16",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const animationMovies = animationMovie.data.results;
-    const animationTVShows = animationTVShow.data.results;
-    const animation = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (animationMovies[i]) animation.push(animationMovies[i]);
-      if (animationTVShows[i]) animation.push(animationTVShows[i]);
-    }
-
-    const documentaryMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=99",
-      options, 
-    );
-
-    const documentaryTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=99",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const documentaryMovies = documentaryMovie.data.results;
-    const documentaryTVShows = documentaryTVShow.data.results;
-    const documentary = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (documentaryMovies[i]) documentary.push(documentaryMovies[i]);
-      if (documentaryTVShows[i]) documentary.push(documentaryTVShows[i]);
-    }
-
-    const terrorMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=27",
-      options, 
-    );
-
-    const terrorTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=27",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const terrorMovies = terrorMovie.data.results;
-    const terrorTVShows = terrorTVShow.data.results;
-    const terror = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (terrorMovies[i]) terror.push(terrorMovies[i]);
-      if (terrorTVShows[i]) terror.push(terrorTVShows[i]);
-    }
-
-    const romanceMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10749",
-      options, 
-    );
-
-    const romanceTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10749",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const romanceMovies = romanceMovie.data.results;
-    const romanceTVShows = romanceTVShow.data.results;
-    const romance = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (romanceMovies[i]) romance.push(romanceMovies[i]);
-      if (romanceTVShows[i]) romance.push(romanceTVShows[i]);
-    }
-
-    const scienceFictionMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=878",
-      options, 
-    );
-
-    const scienceFictionTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=878",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const scienceFictionMovies = scienceFictionMovie.data.results;
-    const scienceFictionTVShows = scienceFictionTVShow.data.results;
-    const scienceFiction = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (scienceFictionMovies[i]) scienceFiction.push(scienceFictionMovies[i]);
-      if (scienceFictionTVShows[i]) scienceFiction.push(scienceFictionTVShows[i]);
-    }
-
-    const musicalMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10402",
-      options, 
-    );
-
-    const musicalTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10402",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const musicalMovies = musicalMovie.data.results;
-    const musicalTVShows = musicalTVShow.data.results;
-    const musical = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (musicalMovies[i]) musical.push(musicalMovies[i]);
-      if (musicalTVShows[i]) musical.push(musicalTVShows[i]);
-    }
-
-    const historyMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=36",
-      options, 
-    );
-
-    const historyTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=36",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const historyMovies = historyMovie.data.results;
-    const historyTVShows = historyTVShow.data.results;
-    const history = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (historyMovies[i]) history.push(historyMovies[i]);
-      if (historyTVShows[i]) history.push(historyTVShows[i]);
-    }
-
-    const thrillerMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=53",
-      options, 
-    );
-
-    const thrillerTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=9648",
-      options,
-    );
-
-    // intercala os resultados entre filmes e séries
-    const thrillerMovies = thrillerMovie.data.results;
-    const thrillerTVShows = thrillerTVShow.data.results;
-    const thriller = [];
-
-    for (let i = 0; i < maxLength; i++) {
-      if (thrillerMovies[i]) thriller.push(thrillerMovies[i]);
-      if (thrillerTVShows[i]) thriller.push(thrillerTVShows[i]);
-    }
-
-    // Filtra os filmes e séries do gênero em específico, removendo os que estão em cartaz:
-    const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
-
-    const trendingFiltered = trending.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const actionFiltered = action.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const dramaFiltered = drama.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const comedyFiltered = comedy.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const animationFiltered = animation.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const documentaryFiltered = documentary.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const terrorFiltered = terror.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const romanceFiltered = romance.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const scienceFictionFiltered = scienceFiction.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const musicalFiltered = musical.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const historyFiltered = history.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const thrillerFiltered = thriller.filter((movie: any) => !nowPlayingIds.has(movie.id));
 
     return [
       nowPlaying.data.results,
-      trendingFiltered,
-      actionFiltered,
-      dramaFiltered,
-      comedyFiltered,
-      animationFiltered,
-      documentaryFiltered,
-      terrorFiltered,
-      romanceFiltered,
-      scienceFictionFiltered,
-      musicalFiltered,
-      historyFiltered,
-      thrillerFiltered,
+      trending,
+      action,
+      drama,
+      comedy,
+      animation,
+      documentary,
+      terror,
+      romance,
+      scienceFiction,
+      musical,
+      history,
+      thriller,
     ];
   } catch (error) {
-    console.error("Erro ao buscar filmes ou series:", error);
-    return [[], [], [], [], [], [], [], [], [], [], [], [], []]; // Retorna array vazio se der erro
+    console.error("Erro ao buscar dados iniciais:", error);
+    return [];
   }
 };
 
+// 🎬 Apenas FILMES
 export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
   try {
-    const nowPlaying = await api.get(
-      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options, 
-    );
+    const maxLength = 21;
 
-    const trending = await api.get(
-      "3/trending/movie/day?language=pt-BR&region=BR&page=1",
-      options, 
-    );
-
-    const actionMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=28",
-      options, 
-    );
-
-    const dramaMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=18",
-      options, 
-    );
-
-    const comedyMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=35",
-      options, 
-    );
-
-    const animationMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=16",
-      options, 
-    );
-
-    const documentaryMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=99",
-      options, 
-    );
-
-    const terrorMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=27",
-      options, 
-    );
-
-    const romanceMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10749",
-      options, 
-    );
-
-    const scienceFictionMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=878",
-      options, 
-    );
-
-    const musicalMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10402",
-      options, 
-    );
-
-    const historyMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=36",
-      options, 
-    );
-
-    const thrillerMovie = await api.get(
-      "3/discover/movie?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=53",
-      options, 
-    );
-
-    // Filtra os filmes e séries do gênero em específico, removendo os que estão em cartaz:
-    const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
-
-    const trendingFiltered = trending.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const actionMovieFiltered = actionMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const dramaMovieFiltered = dramaMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const comedyMovieFiltered = comedyMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const animationMovieFiltered = animationMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const documentaryMovieFiltered = documentaryMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const terrorMovieFiltered = terrorMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const romanceMovieFiltered = romanceMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const scienceFictionMovieFiltered = scienceFictionMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const musicalMovieFiltered = musicalMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const historyMovieFiltered = historyMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
-    const thrillerMovieFiltered = thrillerMovie.data.results.filter((movie: any) => !nowPlayingIds.has(movie.id));
+    const trending = await fetchTrending("movie", maxLength);
+    const action = await fetchCategory("movie", 28, maxLength);
+    const drama = await fetchCategory("movie", 18, maxLength);
+    const comedy = await fetchCategory("movie", 35, maxLength);
+    const animation = await fetchCategory("movie", 16, maxLength);
+    const documentary = await fetchCategory("movie", 99, maxLength);
+    const terror = await fetchCategory("movie", 27, maxLength);
+    const romance = await fetchCategory("movie", 10749, maxLength);
+    const scienceFiction = await fetchCategory("movie", 878, maxLength);
+    const musical = await fetchCategory("movie", 10402, maxLength);
+    const history = await fetchCategory("movie", 36, maxLength);
+    const thriller = await fetchCategory("movie", 53, maxLength);
 
     return [
-      trendingFiltered,
-      actionMovieFiltered,
-      dramaMovieFiltered,
-      comedyMovieFiltered,
-      animationMovieFiltered,
-      documentaryMovieFiltered,
-      terrorMovieFiltered,
-      romanceMovieFiltered,
-      scienceFictionMovieFiltered,
-      musicalMovieFiltered,
-      historyMovieFiltered,
-      thrillerMovieFiltered,
+      trending,
+      action,
+      drama,
+      comedy,
+      animation,
+      documentary,
+      terror,
+      romance,
+      scienceFiction,
+      musical,
+      history,
+      thriller,
     ];
   } catch (error) {
-    console.error("Erro ao buscar filmes ou series:", error);
-    return [[], [], [], [], [], [], [], [], [], [], [], []]; // Retorna array vazio se der erro
+    console.error("Erro ao buscar filmes:", error);
+    return [];
   }
 };
 
+// 📺 Apenas SÉRIES DE TV
 export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
   try {
-    const trending = await api.get(
-      "3/trending/tv/day?language=pt-BR&region=BR&page=1",
-      options, 
-    );
+    const maxLength = 21;
 
-    const actionTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10759",
-      options,
-    );
-
-    const dramaTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=18",
-      options,
-    );
-
-    const comedyTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=35",
-      options,
-    );
-
-    const animationTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=16",
-      options,
-    );
-
-    const documentaryTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=99",
-      options,
-    );
-
-    const thrillerTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=9648",
-      options,
-    );
-
-    const romanceTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10749",
-      options,
-    );
-
-    const scienceFictionTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=10765",
-      options,
-    );
-
-    const historyTVShow = await api.get(
-      "3/discover/tv?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=36",
-      options,
-    );
+    const trending = await fetchTrending("tv", maxLength);
+    const action = await fetchCategory("tv", 28, maxLength);
+    const drama = await fetchCategory("tv", 18, maxLength);
+    const comedy = await fetchCategory("tv", 35, maxLength);
+    const animation = await fetchCategory("tv", 16, maxLength);
+    const documentary = await fetchCategory("tv", 99, maxLength);
+    const terror = await fetchCategory("tv", 27, maxLength);
+    const romance = await fetchCategory("tv", 10749, maxLength);
+    const scienceFiction = await fetchCategory("tv", 878, maxLength);
+    const musical = await fetchCategory("tv", 10402, maxLength);
+    const history = await fetchCategory("tv", 36, maxLength);
+    const mystery = await fetchCategory("tv", 9648, maxLength); // equivalente a thriller em TV
 
     return [
-      trending.data.results,
-      actionTVShow.data.results,
-      dramaTVShow.data.results,
-      comedyTVShow.data.results,
-      animationTVShow.data.results,
-      documentaryTVShow.data.results,
-      thrillerTVShow.data.results,
-      romanceTVShow.data.results,
-      scienceFictionTVShow.data.results,
-      historyTVShow.data.results,
+      trending,
+      action,
+      drama,
+      comedy,
+      animation,
+      documentary,
+      terror,
+      romance,
+      scienceFiction,
+      musical,
+      history,
+      mystery,
     ];
   } catch (error) {
-    console.error("Erro ao buscar filmes ou series:", error);
-    return [[], [], [], [], [], [], [], [], [], []]; // Retorna array vazio se der erro
+    console.error("Erro ao buscar séries:", error);
+    return [];
   }
 };
 
