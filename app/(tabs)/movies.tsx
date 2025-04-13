@@ -1,5 +1,4 @@
 import { View } from "react-native";
-import { useEffect } from "react";
 import Movie from "../../components/MovieMedia";
 
 export default function Movies() {

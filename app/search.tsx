@@ -1,7 +1,7 @@
 import {TextInput, View, Text, ScrollView} from 'react-native'
 import { Link } from 'expo-router';
 import { requestContents } from "@/services/searchContent";
-import ShowMedia from "@/components/HomeShowMedia";
+import ShowMedia from "@/components/AllShowMedia";
 import { MovieSearchProps } from '@/interfaces/search-interface';
 import { useState } from 'react';
 import AntDesign from '@expo/vector-icons/AntDesign'

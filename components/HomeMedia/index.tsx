@@ -1,4 +1,4 @@
-import ShowMedia from "@/components/HomeShowMedia";
+import ShowMedia from "@/components/AllShowMedia";
 import { useContextHome } from "@/contexts/ContextHome";
 import { ScrollView, Text, View } from "react-native";
 
@@ -80,6 +80,12 @@ export default function Home() {
       <View>
         <Text className="pl-2 text-lg font-semibold text-white">História</Text>
         <ShowMedia medias={media[11]} horizontal={true} />
+      </View>
+
+      {/* Seção: Suspense */}
+      <View>
+        <Text className="pl-2 text-lg font-semibold text-white">Suspense</Text>
+        <ShowMedia medias={media[12]} horizontal={true} />
       </View>
     </ScrollView>
   );
