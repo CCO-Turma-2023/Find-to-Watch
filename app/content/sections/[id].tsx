@@ -8,8 +8,7 @@ import { CitiesProps } from "@/interfaces/cities-interface";
 import { TheatersSearchProps } from "@/interfaces/theater-interface";
 import { Ionicons } from "@expo/vector-icons";
 import CalendarSlider from "@/components/Calendar";
-import { Horarios } from "@/interfaces/theater-interface";
-import { MovieSearchProps } from "@/interfaces/search-interface";
+import { TheaterProps } from "@/interfaces/theater-interface";
 
 export default function Section() {
   const { id } = useLocalSearchParams();
@@ -25,7 +24,7 @@ export default function Section() {
   const [cidadeSelecionada, setCidadeSelecionada] = useState<string | null>(
     null,
   );
-  const [Theaters, setTheaters] = useState<TheatersSearchProps | null>(null);
+  const [Theaters, setTheaters] = useState<TheatersSearchProps[]>([]);
   const [data, setData] = useState("")
 
   function Descricao(desc: string, dataSelecionada: string): string {
@@ -65,30 +64,17 @@ export default function Section() {
   
       const response = await getTheaters(id, String(idCity), data);
 
-      const hoje = new Date();
-      const dataAtual = hoje.toLocaleDateString('sv-SE'); // "2025-04-13"
-  
-      console.log(data, dataAtual);
-  
-      let cinemas = response?.cinemas ?? [];
-      let horarios = response?.horarios ?? [];
-  
-      if (Array.isArray(cinemas) && Array.isArray(horarios)) {
-        cinemas = cinemas.filter((cinema: TheatersSearchProps) =>
-          horarios.some((cine: Horarios) => cine.cinema === cinema.nome)
-        );
+      let cinemas = response ?? [];
 
-        // Encontrar nomes de cinemas presentes em 'horarios' mas ausentes em 'cinemas'
-        const nomesCinemasEmHorarios = horarios.map((h : Horarios) => h.cinema);
-        const nomesCinemasEmCinemas = cinemas.map((c: TheatersSearchProps) => c.nome);
+      const theaters: Array<TheatersSearchProps> = [];
 
-        const cinemasAusentes = nomesCinemasEmHorarios.filter(
-          (nome) => !nomesCinemasEmCinemas.includes(nome)
-        );
+      if (Array.isArray(cinemas)) {
+
+        const nomesCinemas = cinemas.map((c: TheaterProps) => c.cinema);
 
         // Criar objetos e adicionar os cinemas ausentes à lista
-        cinemasAusentes.forEach((nome) => {
-          const horarioCinema = horarios.find((h: Horarios) => h.cinema === nome);
+        nomesCinemas.forEach((nome) => {
+          const horarioCinema = cinemas.find((h: TheaterProps) => h.cinema === nome);
 
           const sessoes = [];
 
@@ -107,31 +93,14 @@ export default function Section() {
             }
           }
 
-          cinemas.push({
+          theaters.push({
             nome,
             sessoes,
           });
         });
-  
-        // Atualizar os horários das sessões
-        cinemas.forEach((cinema: TheatersSearchProps) => {
-          horarios.forEach((cine: Horarios) => {
-            if (cinema.nome === cine.cinema) {
-              cinema.sessoes?.forEach((item) => {
-                item.descricao = Descricao(item.descricao, data);
-                if (item?.descricao?.includes("Dublado") && cine.dublados) {
-                  item.horarios = cine.dublados;
-                }
-                if (item?.descricao?.includes("legendado") && cine.legendados) {
-                  item.horarios = cine.legendados;
-                }
-              });
-            }
-          });
-        });
       }
-  
-      setTheaters(cinemas);
+
+      setTheaters(theaters);
     };
   
     fetchTheaters();
