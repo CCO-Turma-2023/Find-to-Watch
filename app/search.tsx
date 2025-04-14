@@ -1,4 +1,4 @@
-import {TextInput, View, Text, ScrollView} from 'react-native'
+import {TextInput, View, Text} from 'react-native'
 import { router } from 'expo-router';
 import { requestContents } from "@/services/searchContent";
 import ShowMedia from "@/components/AllShowMedia";
