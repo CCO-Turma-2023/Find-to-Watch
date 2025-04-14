@@ -8,6 +8,8 @@ import { CitiesProps } from "@/interfaces/cities-interface";
 import { TheatersSearchProps } from "@/interfaces/theater-interface";
 import { Ionicons } from "@expo/vector-icons";
 import CalendarSlider from "@/components/Calendar";
+import { Horarios } from "@/interfaces/theater-interface";
+import { MovieSearchProps } from "@/interfaces/search-interface";
 
 export default function Section() {
   const { id } = useLocalSearchParams();
@@ -26,25 +28,115 @@ export default function Section() {
   const [Theaters, setTheaters] = useState<TheatersSearchProps | null>(null);
   const [data, setData] = useState("")
 
-  useEffect(() => {
-    const fetchTheaters = async () => {
-      let idCity = null;
+  function Descricao(desc: string, dataSelecionada: string): string {
+    const partesData = dataSelecionada.split("-"); // formato "YYYY-MM-DD"
+    const ano = partesData[0];
+    const mesIndex = parseInt(partesData[1], 10) - 1;
+    const dia = partesData[2];
+  
+    const meses = [
+      "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+      "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+    ];
+  
+    const mes = meses[mesIndex];
+  
+    const novaData = `${parseInt(dia)} de ${mes} de ${ano}`;
+    const partes = desc.split(" - ");
+    const tipo = partes[1] ?? "";
+  
+    return `${novaData} - ${tipo}`;
+  }
 
+  useEffect(() => {
+    if (!data) return; // Espera até que a data esteja definida
+  
+    const fetchTheaters = async () => {
+      if (!valueCidade) return; // Certifique-se de que a cidade está selecionada
+  
+      let idCity = null;
+  
       for (let i in cidades) {
         if (cidades[i].value == valueCidade) {
           idCity = cidades[i].id;
           break;
         }
       }
-      console.log(data)
+  
       const response = await getTheaters(id, String(idCity), data);
-      console.log(response);
-      setTheaters(response);
+
+      const hoje = new Date();
+      const dataAtual = hoje.toLocaleDateString('sv-SE'); // "2025-04-13"
+  
+      console.log(data, dataAtual);
+  
+      let cinemas = response?.cinemas ?? [];
+      let horarios = response?.horarios ?? [];
+  
+      if (Array.isArray(cinemas) && Array.isArray(horarios)) {
+        cinemas = cinemas.filter((cinema: TheatersSearchProps) =>
+          horarios.some((cine: Horarios) => cine.cinema === cinema.nome)
+        );
+
+        // Encontrar nomes de cinemas presentes em 'horarios' mas ausentes em 'cinemas'
+        const nomesCinemasEmHorarios = horarios.map((h : Horarios) => h.cinema);
+        const nomesCinemasEmCinemas = cinemas.map((c: TheatersSearchProps) => c.nome);
+
+        const cinemasAusentes = nomesCinemasEmHorarios.filter(
+          (nome) => !nomesCinemasEmCinemas.includes(nome)
+        );
+
+        // Criar objetos e adicionar os cinemas ausentes à lista
+        cinemasAusentes.forEach((nome) => {
+          const horarioCinema = horarios.find((h: Horarios) => h.cinema === nome);
+
+          const sessoes = [];
+
+          if (horarioCinema) {
+            if (horarioCinema.dublados?.length) {
+              sessoes.push({
+                descricao: Descricao("13 de abril de 2025 - Dublado", data),
+                horarios: horarioCinema.dublados,
+              });
+            }
+            if (horarioCinema.legendados?.length) {
+              sessoes.push({
+                descricao: Descricao("13 de abril de 2025 - Versão original/legendado", data),
+                horarios: horarioCinema.legendados,
+              });
+            }
+          }
+
+          cinemas.push({
+            nome,
+            sessoes,
+          });
+        });
+  
+        // Atualizar os horários das sessões
+        cinemas.forEach((cinema: TheatersSearchProps) => {
+          horarios.forEach((cine: Horarios) => {
+            if (cinema.nome === cine.cinema) {
+              cinema.sessoes?.forEach((item) => {
+                item.descricao = Descricao(item.descricao, data);
+                if (item?.descricao?.includes("Dublado") && cine.dublados) {
+                  item.horarios = cine.dublados;
+                }
+                if (item?.descricao?.includes("legendado") && cine.legendados) {
+                  item.horarios = cine.legendados;
+                }
+              });
+            }
+          });
+        });
+      }
+  
+      setTheaters(cinemas);
     };
-    if (valueCidade) {
-      fetchTheaters();
-    }
+  
+    fetchTheaters();
   }, [valueCidade, data]);
+  
 
   useEffect(() => {
     const fetchRegioes = async () => {
