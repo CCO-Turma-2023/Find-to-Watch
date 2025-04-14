@@ -11,38 +11,69 @@ export const requestContents = async (
     const resp = await api.get(`3/search/movie?${defaultUrl}`, options);
     const resp2 = await api.get(`3/search/tv?${defaultUrl}`, options);
 
-    setMedias([...resp.data.results, ...resp2.data.results]);
+    const combined = [...resp.data.results, ...resp2.data.results];
+
+    combined.sort((a, b) => b.vote_count - a.vote_count);
+
+    setMedias(combined);
   } catch (error) {
     console.error("Erro ao buscar filmes:", error);
   }
 };
 
+const filterNowPlaying = async (list: any[]) => {
+  const nowPlaying = await api.get(
+    "3/movie/now_playing?language=pt-BR&region=BR&page=1",
+    options
+  );
+  
+  // Pegando os ids dos filmes "Em Cartaz" para filtrar e retirá-los dos outros tópicos de gênero:
+  const idsNowPlaying = new Set<number>(nowPlaying.data.results.map((movie: any) => movie.id));
+  return list.filter((item) => !idsNowPlaying.has(item.id));
+};
+
 const fetchCategory = async (
   mediaType: "movie" | "tv",
   genreId: number,
-  maxLength: number
+  maxLength: number,
 ): Promise<MovieSearchProps[]> => {
   const resp = await api.get(
     `3/discover/${mediaType}?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=${genreId}`,
     options
   );
-  return resp.data.results.slice(0, maxLength);
+
+  if (mediaType === "movie") {
+    // Filtrando os resultados ao retirar os filmes "Em Cartaz"
+    const respFiltered = await filterNowPlaying(resp.data.results);
+    return respFiltered.slice(0, maxLength);
+  }
+  else {
+    return resp.data.results.slice(0, maxLength);
+  }
 };
 
 const fetchTrending = async (
   mediaType: "movie" | "tv",
-  maxLength: number
+  maxLength: number,
 ): Promise<MovieSearchProps[]> => {
   const resp = await api.get(
     `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=1`,
     options
   );
-  return resp.data.results.slice(0, maxLength);
+
+  if (mediaType === "movie") {
+    // Filtrando os resultados ao retirar os filmes "Em Cartaz"
+    const respFiltered = await filterNowPlaying(resp.data.results);
+    return respFiltered.slice(0, maxLength);
+  }
+  else {
+    return resp.data.results.slice(0, maxLength);
+  }
 };
 
 const fetchIntercalatedCategory = async (
   genreId: number,
-  maxLength: number
+  maxLength: number, 
 ): Promise<MovieSearchProps[]> => {
   const movie = await fetchCategory("movie", genreId, maxLength);
   const tv = await fetchCategory("tv", genreId, maxLength);
@@ -57,8 +88,9 @@ const fetchIntercalatedCategory = async (
 };
 
 const fetchIntercalatedTrending = async (
-  maxLength: number
+  maxLength: number, 
 ): Promise<MovieSearchProps[]> => {
+
   const movie = await fetchTrending("movie", maxLength);
   const tv = await fetchTrending("tv", maxLength);
   const result: MovieSearchProps[] = [];
@@ -92,6 +124,7 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
     const musical = await fetchIntercalatedCategory(10402, maxLength);
     const history = await fetchIntercalatedCategory(36, maxLength);
 
+    // Para "thriller" precisa ser diferente, pois o id do gênero se altera para filmes e séries
     const thrillerMovie = await fetchCategory("movie", 53, maxLength);
     const thrillerTV = await fetchCategory("tv", 9648, maxLength);
     const thriller: MovieSearchProps[] = [];
@@ -124,6 +157,11 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
 export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
+
+    const nowPlaying = await api.get(
+      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
+      options
+    );
 
     const trending = await fetchTrending("movie", maxLength);
     const action = await fetchCategory("movie", 28, maxLength);
@@ -161,6 +199,11 @@ export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
 export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
+
+    const nowPlaying = await api.get(
+      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
+      options
+    );
 
     const trending = await fetchTrending("tv", maxLength);
     const actionNadventure = await fetchCategory("tv", 10759, maxLength);
