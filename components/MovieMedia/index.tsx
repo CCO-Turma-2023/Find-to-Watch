@@ -4,18 +4,18 @@ import { MovieSearchProps } from "@/interfaces/search-interface";
 import { useContextMovie } from "@/contexts/ContextMovie";
 
 const categorias = [
-  { titulo: "Tendências", index: 1 },
-  { titulo: "Ação", index: 2 },
-  { titulo: "Drama", index: 3 },
-  { titulo: "Comédia", index: 4 },
-  { titulo: "Animação", index: 5 },
-  { titulo: "Documentário", index: 6 },
-  { titulo: "Terror", index: 7 },
-  { titulo: "Romance", index: 8 },
-  { titulo: "Ficção Científica", index: 9 },
-  { titulo: "Musical", index: 10 },
-  { titulo: "História", index: 11 },
-  { titulo: "Suspense", index: 12 },
+  { titulo: "Tendências", index: 0 },
+  { titulo: "Ação", index: 1 },
+  { titulo: "Drama", index: 2 },
+  { titulo: "Comédia", index: 3 },
+  { titulo: "Animação", index: 4 },
+  { titulo: "Documentário", index: 5 },
+  { titulo: "Terror", index: 6 },
+  { titulo: "Romance", index: 7 },
+  { titulo: "Ficção Científica", index: 8 },
+  { titulo: "Musical", index: 9 },
+  { titulo: "História", index: 10 },
+  { titulo: "Suspense", index: 11 },
 ];
 
 export default function Movie() {

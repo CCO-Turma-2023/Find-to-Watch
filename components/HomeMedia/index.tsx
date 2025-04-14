@@ -16,7 +16,7 @@ const categorias = [
   { titulo: "Ficção Científica", index: 9 },
   { titulo: "Musical", index: 10 },
   { titulo: "História", index: 11 },
-  { titulo: "Suspense", index: 12 },
+  { titulo: "Suspense e Mistério", index: 12 },
 ];
 
 export default function Home() {
