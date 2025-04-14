@@ -4,18 +4,18 @@ import { MovieSearchProps } from "@/interfaces/search-interface";
 import { useContextTVShow } from "@/contexts/ContextTVShow";
 
 const categorias = [
-  { titulo: "Tendências", index: 1 },
-  { titulo: "Ação", index: 2 },
-  { titulo: "Drama", index: 3 },
-  { titulo: "Comédia", index: 4 },
-  { titulo: "Animação", index: 5 },
-  { titulo: "Documentário", index: 6 },
-  { titulo: "Terror", index: 7 },
-  { titulo: "Romance", index: 8 },
-  { titulo: "Ficção Científica", index: 9 },
-  { titulo: "Musical", index: 10 },
-  { titulo: "História", index: 11 },
-  { titulo: "Suspense", index: 12 },
+  { titulo: "Tendências", index: 0 },
+  { titulo: "Ação e Aventura", index: 1 },
+  { titulo: "Drama", index: 2 },
+  { titulo: "Comédia", index: 3 },
+  { titulo: "Animação", index: 4 },
+  { titulo: "Documentário", index: 5 },
+  { titulo: "Infantil", index: 6 },
+  { titulo: "Romance", index: 7 },
+  { titulo: "Fantasia", index: 8 },
+  { titulo: "Reality Show", index: 9 },
+  { titulo: "História", index: 10 },
+  { titulo: "Mistério", index: 11 },
 ];
 
 export default function TVShow() {
@@ -29,7 +29,7 @@ export default function TVShow() {
       showsVerticalScrollIndicator={false}
       className="bg-black py-2"
       renderItem={({ item }) => {
-        const categoriaFilmes: MovieSearchProps[] = media[item.index]?.slice(0, 10) || []; // Limita a 10 itens
+        const categoriaFilmes: MovieSearchProps[] = media[item.index]?.slice(0, 20) || []; // Limita a 20 itens
 
         return (
           <View className="mb-8">

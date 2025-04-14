@@ -71,7 +71,6 @@ const fetchIntercalatedTrending = async (
   return result;
 };
 
-// 🔀 Mantém mistura de filmes + séries
 export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
@@ -122,7 +121,6 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
   }
 };
 
-// 🎬 Apenas FILMES
 export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
@@ -160,37 +158,36 @@ export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
   }
 };
 
-// 📺 Apenas SÉRIES DE TV
 export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
 
     const trending = await fetchTrending("tv", maxLength);
-    const action = await fetchCategory("tv", 28, maxLength);
+    const actionNadventure = await fetchCategory("tv", 10759, maxLength);
     const drama = await fetchCategory("tv", 18, maxLength);
     const comedy = await fetchCategory("tv", 35, maxLength);
     const animation = await fetchCategory("tv", 16, maxLength);
     const documentary = await fetchCategory("tv", 99, maxLength);
-    const terror = await fetchCategory("tv", 27, maxLength);
+    const kids = await fetchCategory("tv", 10762, maxLength);
     const romance = await fetchCategory("tv", 10749, maxLength);
-    const scienceFiction = await fetchCategory("tv", 878, maxLength);
-    const musical = await fetchCategory("tv", 10402, maxLength);
+    const fantasy = await fetchCategory("tv", 10765, maxLength);
+    const reality = await fetchCategory("tv", 10764, maxLength);
     const history = await fetchCategory("tv", 36, maxLength);
-    const mystery = await fetchCategory("tv", 9648, maxLength); // equivalente a thriller em TV
+    const mistery = await fetchCategory("tv", 9648, maxLength); 
 
     return [
       trending,
-      action,
+      actionNadventure,
       drama,
       comedy,
       animation,
       documentary,
-      terror,
+      kids,
       romance,
-      scienceFiction,
-      musical,
+      fantasy,
+      reality,
       history,
-      mystery,
+      mistery,
     ];
   } catch (error) {
     console.error("Erro ao buscar séries:", error);
