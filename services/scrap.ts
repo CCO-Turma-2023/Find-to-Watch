@@ -56,7 +56,7 @@ export async function getTheaters (idMovie : string | string[], idCity : string 
       },
     });
 
-    const {cinemas, horarios} = response.data
+    const cinemas = response.data
 
     const addHours = (time: string, hoursToAdd: number): string => {
       const [hourStr, minuteStr] = time.split(':');
@@ -72,8 +72,8 @@ export async function getTheaters (idMovie : string | string[], idCity : string 
       return `${newHour}:${newMinute}`;
     };
 
-    if (Array.isArray(horarios)) {
-      horarios.forEach((item: any) => {
+    if (Array.isArray(cinemas)) {
+      cinemas.forEach((item: any) => {
         if (Array.isArray(item.dublados)) {
           item.dublados = item.dublados.map((hora: string) => addHours(hora, 3));
         }
@@ -83,7 +83,7 @@ export async function getTheaters (idMovie : string | string[], idCity : string 
       });
     }
 
-    return { cinemas, horarios };
+    return cinemas;
 
   } catch (error) {
     console.error("Erro ao buscar via backend:", error);

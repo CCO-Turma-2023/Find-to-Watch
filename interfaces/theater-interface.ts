@@ -3,7 +3,7 @@ export interface Session {
     horarios: string[];
   }
 
-export interface Horarios {
+export interface TheaterProps {
     cinema: string;
     dublados: string[];
     legendados: string[];
