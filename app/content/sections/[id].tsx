@@ -72,7 +72,6 @@ export default function Section() {
 
         const nomesCinemas = cinemas.map((c: TheaterProps) => c.cinema);
 
-        // Criar objetos e adicionar os cinemas ausentes à lista
         nomesCinemas.forEach((nome) => {
           const horarioCinema = cinemas.find((h: TheaterProps) => h.cinema === nome);
 

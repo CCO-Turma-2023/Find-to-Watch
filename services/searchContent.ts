@@ -2,16 +2,43 @@ import { api, options } from "./api";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import React from "react";
 
+
 export const requestContents = async (
   mediaSearch: string,
   setMedias: React.Dispatch<React.SetStateAction<MovieSearchProps[]>>,
 ) => {
-  const defaultUrl = `query=${mediaSearch}&include_adult=false&language=pt-BR&page=1`;
+  const defaultUrl = `query=${mediaSearch}&include_adult=false&language=pt-BR&Region=BR&page=1`;
+  const defaultUrlEn = `query=${mediaSearch}&include_adult=false&page=1`;
   try {
     const resp = await api.get(`3/search/movie?${defaultUrl}`, options);
-    const resp2 = await api.get(`3/search/tv?${defaultUrl}`, options);
+    const resp2 = await api.get(`3/search/movie?${defaultUrlEn}`, options);
+    const resp3 = await api.get(`3/search/tv?${defaultUrl}`, options);
+    const resp4 = await api.get(`3/search/tv?${defaultUrlEn}`, options);
 
-    const combined = [...resp.data.results, ...resp2.data.results];
+    const mapOverviewsEn = new Map();
+    resp2.data.results.forEach((movie : any) => {
+      mapOverviewsEn.set(movie.id, movie.overview?.trim());
+    });
+
+    
+    resp.data.results = resp.data.results.filter((movie : any) => {
+      const overviewPt = movie.overview?.trim();
+      const overviewEn = mapOverviewsEn.get(movie.id);
+      return overviewPt !== overviewEn;
+    });
+
+    const mapTvOverviewsEn = new Map();
+    resp4.data.results.forEach((tvShow : any) => {
+      mapTvOverviewsEn.set(tvShow.id, tvShow.overview?.trim());
+    });
+
+    resp3.data.results = resp3.data.results.filter((tvShow : any) => {
+      const overviewPt = tvShow.overview?.trim();
+      const overviewEn = mapTvOverviewsEn.get(tvShow.id);
+      return overviewPt !== overviewEn;
+    });
+
+    const combined = [...resp.data.results, ...resp3.data.results];
 
     combined.sort((a, b) => b.vote_count - a.vote_count);
 
@@ -42,6 +69,8 @@ const fetchCategory = async (
     options
   );
 
+  resp.data.results = resp.data.results.filter((item : any) => item.overview?.trim() !== "");
+
   if (mediaType === "movie") {
     // Filtrando os resultados ao retirar os filmes "Em Cartaz"
     const respFiltered = await filterNowPlaying(resp.data.results);
@@ -60,6 +89,9 @@ const fetchTrending = async (
     `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=1`,
     options
   );
+
+  resp.data.results = resp.data.results.filter((item : any) => item.overview?.trim() !== "");
+
 
   if (mediaType === "movie") {
     // Filtrando os resultados ao retirar os filmes "Em Cartaz"
@@ -242,7 +274,7 @@ export const RequestMediabyId = async (id : string | string[]) => {
   if (id[id.length - 1] === "1")
   {
     const movie = await api.get(
-      `3/movie/${id.slice(0, -1)}?language=pt-BR`,
+      `3/movie/${id.slice(0, -1)}?language=pt-BR&Region=BR`,
       options, 
     );
   
@@ -250,7 +282,7 @@ export const RequestMediabyId = async (id : string | string[]) => {
   }
 
   const show = await api.get(
-    `3/tv/${id.slice(0, -1)}?language=pt-BR`,
+    `3/tv/${id.slice(0, -1)}?language=pt-BR&Region=BR`,
     options, 
   );
 
