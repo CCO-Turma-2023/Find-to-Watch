@@ -34,10 +34,10 @@ export default function Header() {
           {/* Avatar */}
           <View className="h-12 w-12 overflow-hidden rounded-full bg-white items-center justify-center">
             <Image
-              source={icon}
+              source={{uri: "https://i.redd.it/the-famous-wet-owl-also-known-as-lamont-appears-to-be-a-v0-0awtil7kynr81.jpg?width=750&format=pjpg&auto=webp&s=293b8103fdffd57e5ffa13c5a6f02795347061a8"}}
               style={{
-                width: 104, 
-                height: 104,
+                width: 50, 
+                height: 50,
               }}
             />
         </View>
