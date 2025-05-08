@@ -1,10 +1,11 @@
 import { View } from "react-native";
-import TVShow from "../../components/TVShowMedia"
+import TVShow from "../../components/TVShowMedia";
+import Movie from "@/components/MovieMedia";
 
-export default function Filmes(){
-    return(
-        <View className="bg-black flex-1">
-            <TVShow />
-        </View>
-    )
+export default function Filmes() {
+  return (
+    <View className="flex-1 bg-black">
+      <TVShow />
+    </View>
+  );
 }

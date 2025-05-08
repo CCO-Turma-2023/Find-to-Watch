@@ -2,10 +2,10 @@ import { api, options } from "./api";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import React from "react";
 
-
 export const requestContents = async (
   mediaSearch: string,
   setMedias: React.Dispatch<React.SetStateAction<MovieSearchProps[]>>,
+  selectFilter: number[],
 ) => {
   const defaultUrl = `query=${mediaSearch}&include_adult=false&language=pt-BR&Region=BR&page=1`;
   const defaultUrlEn = `query=${mediaSearch}&include_adult=false&page=1`;
@@ -16,23 +16,22 @@ export const requestContents = async (
     const resp4 = await api.get(`3/search/tv?${defaultUrlEn}`, options);
 
     const mapOverviewsEn = new Map();
-    resp2.data.results.forEach((movie : any) => {
+    resp2.data.results.forEach((movie: any) => {
       mapOverviewsEn.set(movie.id, movie.overview?.trim());
     });
 
-    
-    resp.data.results = resp.data.results.filter((movie : any) => {
+    resp.data.results = resp.data.results.filter((movie: any) => {
       const overviewPt = movie.overview?.trim();
       const overviewEn = mapOverviewsEn.get(movie.id);
       return overviewPt !== overviewEn;
     });
 
     const mapTvOverviewsEn = new Map();
-    resp4.data.results.forEach((tvShow : any) => {
+    resp4.data.results.forEach((tvShow: any) => {
       mapTvOverviewsEn.set(tvShow.id, tvShow.overview?.trim());
     });
 
-    resp3.data.results = resp3.data.results.filter((tvShow : any) => {
+    resp3.data.results = resp3.data.results.filter((tvShow: any) => {
       const overviewPt = tvShow.overview?.trim();
       const overviewEn = mapTvOverviewsEn.get(tvShow.id);
       return overviewPt !== overviewEn;
@@ -51,11 +50,13 @@ export const requestContents = async (
 const filterNowPlaying = async (list: any[]) => {
   const nowPlaying = await api.get(
     "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-    options
+    options,
   );
-  
+
   // Pegando os ids dos filmes "Em Cartaz" para filtrar e retirá-los dos outros tópicos de gênero:
-  const idsNowPlaying = new Set<number>(nowPlaying.data.results.map((movie: any) => movie.id));
+  const idsNowPlaying = new Set<number>(
+    nowPlaying.data.results.map((movie: any) => movie.id),
+  );
   return list.filter((item) => !idsNowPlaying.has(item.id));
 };
 
@@ -66,17 +67,18 @@ const fetchCategory = async (
 ): Promise<MovieSearchProps[]> => {
   const resp = await api.get(
     `3/discover/${mediaType}?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=${genreId}`,
-    options
+    options,
   );
 
-  resp.data.results = resp.data.results.filter((item : any) => item.overview?.trim() !== "");
+  resp.data.results = resp.data.results.filter(
+    (item: any) => item.overview?.trim() !== "",
+  );
 
   if (mediaType === "movie") {
     // Filtrando os resultados ao retirar os filmes "Em Cartaz"
     const respFiltered = await filterNowPlaying(resp.data.results);
     return respFiltered.slice(0, maxLength);
-  }
-  else {
+  } else {
     return resp.data.results.slice(0, maxLength);
   }
 };
@@ -87,25 +89,25 @@ const fetchTrending = async (
 ): Promise<MovieSearchProps[]> => {
   const resp = await api.get(
     `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=1`,
-    options
+    options,
   );
 
-  resp.data.results = resp.data.results.filter((item : any) => item.overview?.trim() !== "");
-
+  resp.data.results = resp.data.results.filter(
+    (item: any) => item.overview?.trim() !== "",
+  );
 
   if (mediaType === "movie") {
     // Filtrando os resultados ao retirar os filmes "Em Cartaz"
     const respFiltered = await filterNowPlaying(resp.data.results);
     return respFiltered.slice(0, maxLength);
-  }
-  else {
+  } else {
     return resp.data.results.slice(0, maxLength);
   }
 };
 
 const fetchIntercalatedCategory = async (
   genreId: number,
-  maxLength: number, 
+  maxLength: number,
 ): Promise<MovieSearchProps[]> => {
   const movie = await fetchCategory("movie", genreId, maxLength);
   const tv = await fetchCategory("tv", genreId, maxLength);
@@ -120,9 +122,8 @@ const fetchIntercalatedCategory = async (
 };
 
 const fetchIntercalatedTrending = async (
-  maxLength: number, 
+  maxLength: number,
 ): Promise<MovieSearchProps[]> => {
-
   const movie = await fetchTrending("movie", maxLength);
   const tv = await fetchTrending("tv", maxLength);
   const result: MovieSearchProps[] = [];
@@ -141,7 +142,7 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
 
     const nowPlaying = await api.get(
       "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options
+      options,
     );
 
     const trending = await fetchIntercalatedTrending(maxLength);
@@ -192,7 +193,7 @@ export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
 
     const nowPlaying = await api.get(
       "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options
+      options,
     );
 
     const trending = await fetchTrending("movie", maxLength);
@@ -234,7 +235,7 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
 
     const nowPlaying = await api.get(
       "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options
+      options,
     );
 
     const trending = await fetchTrending("tv", maxLength);
@@ -248,7 +249,7 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
     const fantasy = await fetchCategory("tv", 10765, maxLength);
     const reality = await fetchCategory("tv", 10764, maxLength);
     const history = await fetchCategory("tv", 36, maxLength);
-    const mistery = await fetchCategory("tv", 9648, maxLength); 
+    const mistery = await fetchCategory("tv", 9648, maxLength);
 
     return [
       trending,
@@ -270,21 +271,20 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
   }
 };
 
-export const RequestMediabyId = async (id : string | string[]) => {
-  if (id[id.length - 1] === "1")
-  {
+export const RequestMediabyId = async (id: string | string[]) => {
+  if (id[id.length - 1] === "1") {
     const movie = await api.get(
       `3/movie/${id.slice(0, -1)}?language=pt-BR&Region=BR`,
-      options, 
+      options,
     );
-  
+
     return movie.data;
   }
 
-  const show = await api.get(
+  const tvshow = await api.get(
     `3/tv/${id.slice(0, -1)}?language=pt-BR&Region=BR`,
-    options, 
+    options,
   );
 
-  return show.data;
-}
+  return tvshow.data;
+};

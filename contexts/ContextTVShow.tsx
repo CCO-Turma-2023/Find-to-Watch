@@ -23,7 +23,7 @@ export const ProviderTVShow = ({ children }: { children: ReactNode }) => {
       const categories = await initialRequestTVShow();
       setMedia(categories);
     };
-  
+
     fetchData();
   }, []);
 

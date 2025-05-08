@@ -5,42 +5,49 @@ import { ProviderHome } from "@/contexts/ContextHome";
 import { ProviderMovie } from "@/contexts/ContextMovie";
 import { ProviderTVShow } from "@/contexts/ContextTVShow";
 import Header from "@/components/HeaderComponent";
-import { SafeAreaView, Platform, StatusBar as RNStatusBar, View } from "react-native";
+import {
+  SafeAreaView,
+  Platform,
+  StatusBar as RNStatusBar,
+  View,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
-  const statusBarHeight = Platform.OS === "android" ? RNStatusBar.currentHeight || 0 : insets.top;
+  const statusBarHeight =
+    Platform.OS === "android" ? RNStatusBar.currentHeight || 0 : insets.top;
 
   return (
     <ProviderHome>
       <ProviderMovie>
         <ProviderTVShow>
           <SafeAreaView className="flex-1 bg-blue-600">
-            
             <View
               style={{ height: statusBarHeight }}
-              className="absolute top-0 left-0 right-0 z-10"
+              className="absolute left-0 right-0 top-0 z-10"
             >
               <LinearGradient
                 colors={["rgba(2, 77, 191, 1)", "rgba(1, 36, 89, 1)"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                className="w-full h-full"
+                className="h-full w-full"
               />
             </View>
 
-           
-            <StatusBar style="light" translucent backgroundColor="transparent" />
+            <StatusBar
+              style="light"
+              translucent
+              backgroundColor="transparent"
+            />
 
-            
             <View
               className="flex-1"
               style={{
                 paddingTop: statusBarHeight,
-                paddingBottom: insets.bottom, 
+                paddingBottom: insets.bottom,
               }}
             >
               <Header />
@@ -54,7 +61,7 @@ export default function TabLayout() {
                     borderTopLeftRadius: 16,
                     borderTopRightRadius: 16,
                     position: "absolute",
-                    bottom: insets.bottom, 
+                    bottom: insets.bottom,
                     left: 0,
                     right: 0,
                     height: 60,
@@ -72,7 +79,9 @@ export default function TabLayout() {
                   name="index"
                   options={{
                     title: "Home",
-                    tabBarIcon: () => <Feather name="home" size={20} color="white" />,
+                    tabBarIcon: () => (
+                      <Feather name="home" size={20} color="white" />
+                    ),
                   }}
                 />
                 <Tabs.Screen
@@ -80,7 +89,11 @@ export default function TabLayout() {
                   options={{
                     title: "Filmes",
                     tabBarIcon: () => (
-                      <MaterialCommunityIcons name="movie" size={20} color="white" />
+                      <MaterialCommunityIcons
+                        name="movie"
+                        size={20}
+                        color="white"
+                      />
                     ),
                   }}
                 />
@@ -88,14 +101,18 @@ export default function TabLayout() {
                   name="tvshow"
                   options={{
                     title: "Séries",
-                    tabBarIcon: () => <Feather name="tv" size={20} color="white" />,
+                    tabBarIcon: () => (
+                      <Feather name="tv" size={20} color="white" />
+                    ),
                   }}
                 />
                 <Tabs.Screen
                   name="cinema"
                   options={{
                     title: "Cinema",
-                    tabBarIcon: () => <Feather name="film" size={20} color="white" />,
+                    tabBarIcon: () => (
+                      <Feather name="film" size={20} color="white" />
+                    ),
                   }}
                 />
               </Tabs>
