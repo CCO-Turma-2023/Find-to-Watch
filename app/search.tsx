@@ -3,13 +3,14 @@ import { router } from "expo-router";
 import { requestContents } from "@/services/searchContent";
 import ShowMedia from "@/components/AllShowMedia";
 import { MovieSearchProps } from "@/interfaces/search-interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { StatusBar } from "expo-status-bar";
 import { Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useContextHome } from "@/contexts/ContextHome";
 
 export default function Search() {
   const [media, setMedia] = useState<MovieSearchProps[]>([]);

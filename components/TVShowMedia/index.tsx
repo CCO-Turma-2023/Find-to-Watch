@@ -2,6 +2,8 @@ import { FlatList, Text, View, Image } from "react-native";
 import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import { useContextTVShow } from "@/contexts/ContextTVShow";
+import { useContextHome } from "@/contexts/ContextHome";
+import { useEffect } from "react";
 
 const categorias = [
   { titulo: "Tendências", index: 0 },
@@ -29,7 +31,8 @@ export default function TVShow() {
       showsVerticalScrollIndicator={false}
       className="bg-black py-2"
       renderItem={({ item }) => {
-        const categoriaFilmes: MovieSearchProps[] = media[item.index]?.slice(0, 20) || []; // Limita a 20 itens
+        const categoriaFilmes: MovieSearchProps[] =
+          media[item.index]?.slice(0, 20) || []; // Limita a 20 itens
 
         return (
           <View className="mb-8">

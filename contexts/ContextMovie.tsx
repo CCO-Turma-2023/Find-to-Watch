@@ -23,7 +23,7 @@ export const ProviderMovie = ({ children }: { children: ReactNode }) => {
       const categories = await initialRequestMovie();
       setMedia(categories);
     };
-  
+
     fetchData();
   }, []);
 

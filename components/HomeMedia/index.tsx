@@ -2,6 +2,7 @@ import { useContextHome } from "@/contexts/ContextHome";
 import { FlatList, Text, View, Image } from "react-native";
 import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
+import { useEffect } from "react";
 
 const categorias = [
   { titulo: "Em Cartaz", index: 0 },
@@ -30,7 +31,7 @@ export default function Home() {
       showsVerticalScrollIndicator={false}
       className="bg-black py-2"
       renderItem={({ item }) => {
-        const categoriaFilmes: MovieSearchProps[] = media[item.index] || []; 
+        const categoriaFilmes: MovieSearchProps[] = media[item.index] || [];
 
         return (
           <View className="mb-8">

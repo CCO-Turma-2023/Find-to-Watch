@@ -23,7 +23,6 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
       const categories = await initialRequest();
       setMedia(categories);
     };
-  
     fetchData();
   }, []);
 
