@@ -36,7 +36,14 @@ export const requestContents = async (
       return overviewPt !== overviewEn;
     });
 
-    return filteredMovies;
+    const nowPlaying = await api.get(`3/movie/now_playing?language=pt-BR&region=BR&page=1`, options);
+    const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
+
+    const filteredMovies2 = filteredMovies.filter((movie: any) => 
+      !nowPlayingIds.has(movie.id)
+    );
+
+    return filteredMovies2;
   };
 
   const fetchTvShows = async () => {
@@ -76,7 +83,7 @@ export const requestContents = async (
       return overviewPt !== overviewEn;
     });
 
-    const nowPlaying = await api.get(`3/movie/now_playing?language=pt-BR&page=1`, options);
+    const nowPlaying = await api.get(`3/movie/now_playing?language=pt-BR&region=BR&page=1`, options);
     const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
 
     // Filtra os filmes para que apareçam na busca somente aqueles em cartaz
@@ -117,7 +124,6 @@ export const requestContents = async (
     console.error("Erro ao buscar conteúdos:", error);
   }
 };
-
 
 const filterNowPlaying = async (list: any[]) => {
   const nowPlaying = await api.get(
