@@ -21,6 +21,13 @@ export default function Search() {
     setBusca(text);
   };
 
+  // UseEffect para realizar a busca novamente se o usuário já tiver escrito algo antes de marcar ou desmarcar um filtro
+  useEffect(() => {
+    if (busca.trim() !== "") {
+      requestContents(busca, setMedia, selectFilter);
+    }
+  }, [selectFilter]);
+
   const [filters, setFilters] = useState([
     {
       id: 1,
