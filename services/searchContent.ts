@@ -7,8 +7,8 @@ export const requestContents = async (
   setMedias: React.Dispatch<React.SetStateAction<MovieSearchProps[]>>,
   selectFilter: number[],
 ) => {
-  const defaultUrl = `query=${mediaSearch}&include_adult=false&language=pt-BR&Region=BR&page=1`;
-  const defaultUrlEn = `query=${mediaSearch}&include_adult=false&page=1`;
+  const defaultUrl = `query=${mediaSearch}&language=pt-BR&Region=BR&page=1`;
+  const defaultUrlEn = `query=${mediaSearch}&page=1`;
 
   const results: any[] = [];
 
@@ -60,21 +60,30 @@ export const requestContents = async (
   };
 
   const fetchNowPlaying = async () => {
-    const [resp, respEn] = await Promise.all([
-      api.get(`3/movie/now_playing?${defaultUrl}`, options),
-      api.get(`3/movie/now_playing?${defaultUrlEn}`, options),
+    const [searchResp, searchRespEn] = await Promise.all([
+      api.get(`3/search/movie?${defaultUrl}`, options),
+      api.get(`3/search/movie?${defaultUrlEn}`, options),
     ]);
 
     const mapOverviewsEn = new Map();
-    respEn.data.results.forEach((nowPlaying: any) => {
-      mapOverviewsEn.set(nowPlaying.id, nowPlaying.overview?.trim());
+    searchRespEn.data.results.forEach((movie: any) => {
+      mapOverviewsEn.set(movie.id, movie.overview?.trim());
     });
 
-    const filteredNowPlaying = resp.data.results.filter((nowPlaying: any) => {
-      const overviewPt = nowPlaying.overview?.trim();
-      const overviewEn = mapOverviewsEn.get(nowPlaying.id);
+    const filteredSearchMovies = searchResp.data.results.filter((movie: any) => {
+      const overviewPt = movie.overview?.trim();
+      const overviewEn = mapOverviewsEn.get(movie.id);
       return overviewPt !== overviewEn;
     });
+
+    const nowPlaying = await api.get(`3/movie/now_playing?language=pt-BR&page=1`, options);
+    const nowPlayingIds = new Set(nowPlaying.data.results.map((movie: any) => movie.id));
+
+    // Filtra os filmes para que apareçam na busca somente aqueles em cartaz
+    // Precisou implementar assim por não existir search apenas para os filmes em cartaz
+    const filteredNowPlaying = filteredSearchMovies.filter((movie: any) =>
+      nowPlayingIds.has(movie.id)
+    );
 
     return filteredNowPlaying;
   };
