@@ -3,5 +3,6 @@ export interface MovieSearchProps {
   title: string;
   overview: string;
   poster_path: string;
+  key: string | undefined
   movie: boolean;
 }

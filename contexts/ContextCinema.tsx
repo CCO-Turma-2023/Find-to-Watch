@@ -1,4 +1,5 @@
 import { MovieSearchProps } from "@/interfaces/search-interface";
+import { initialRequestCinema } from "@/services/searchContent";
 
 import React, {
   createContext,
@@ -18,7 +19,14 @@ const ContextCinema = createContext<ContextCinemaType | undefined>(undefined);
 export const ProviderCinema = ({ children }: { children: ReactNode }) => {
   const [media, setMedia] = useState<MovieSearchProps[][]>([]);
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+      const fetchData = async () => {
+        const categories = await initialRequestCinema();
+        setMedia(categories);
+      };
+  
+      fetchData();
+    }, []);
 
   return (
     <ContextCinema.Provider value={{ media, setMedia }}>

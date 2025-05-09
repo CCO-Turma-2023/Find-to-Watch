@@ -269,11 +269,6 @@ export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
 
-    const nowPlaying = await api.get(
-      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options,
-    );
-
     const trending = await fetchTrending("movie", maxLength);
     const action = await fetchCategory("movie", 28, maxLength);
     const drama = await fetchCategory("movie", 18, maxLength);
@@ -311,11 +306,6 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
 
-    const nowPlaying = await api.get(
-      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options,
-    );
-
     const trending = await fetchTrending("tv", maxLength);
     const actionNadventure = await fetchCategory("tv", 10759, maxLength);
     const drama = await fetchCategory("tv", 18, maxLength);
@@ -348,6 +338,54 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
     return [];
   }
 };
+
+export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
+  try {
+    const nowPlayingResponse = await api.get(
+      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
+      options
+    );
+
+    const upComingResponse = await api.get(
+      "3/movie/upcoming",
+      options
+    );
+
+    const getTrailerKey = async (movieId: number): Promise<string | undefined> => {
+      const response = await api.get(`3/movie/${movieId}/videos?language=pt-BR`, options);
+      const trailers = response.data.results;
+
+      // Filtra o primeiro trailer válido do YouTube
+      const trailer = trailers.find(
+        (t: any) => t.type === "Trailer" && t.site === "YouTube"
+      );
+
+      return trailer?.key;
+    };
+
+    // Atualiza nowPlaying com o campo key
+    const nowPlaying: MovieSearchProps[] = await Promise.all(
+      nowPlayingResponse.data.results.map(async (movie: MovieSearchProps) => {
+        const key = await getTrailerKey(Number(movie.id));
+        return { ...movie, key };
+      })
+    );
+
+    // Atualiza upComing com o campo key
+    const upComing: MovieSearchProps[] = await Promise.all(
+      upComingResponse.data.results.map(async (movie: MovieSearchProps) => {
+        const key = await getTrailerKey(Number(movie.id));
+        return { ...movie, key };
+      })
+    );
+
+    return [nowPlaying, upComing];
+  } catch (error) {
+    console.error("Erro ao buscar filmes:", error);
+    return [];
+  }
+};
+
 
 export const RequestMediabyId = async (id: string | string[]) => {
   if (id[id.length - 1] === "1") {
