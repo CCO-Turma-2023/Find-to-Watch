@@ -1,5 +1,7 @@
 import axios from "axios";
-import token from "../token.json";
+import Constants from 'expo-constants';
+
+const { tmdbToken } = Constants.expoConfig?.extra || {};
 
 export const api = axios.create({
   baseURL: "https://api.themoviedb.org/", // substitua pela URL da sua API
@@ -10,6 +12,6 @@ export const options = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization: token.Authorization,
+    Authorization: tmdbToken
   },
 };
