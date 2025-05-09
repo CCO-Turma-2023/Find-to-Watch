@@ -143,33 +143,19 @@ const fetchCategory = async (
   genreId: number,
   maxLength: number,
 ): Promise<MovieSearchProps[]> => {
-  const resp = await api.get(
+  let resp
+  if(genreId !== 0){
+    resp = await api.get(
     `3/discover/${mediaType}?language=pt-BR&region=BR&page=1&sort_by=popularity.desc&with_genres=${genreId}`,
     options,
   );
-
-  resp.data.results = resp.data.results.filter(
-    (item: any) => item.overview?.trim() !== "",
-  );
-
-  if (mediaType === "movie") {
-    // Filtrando os resultados ao retirar os filmes "Em Cartaz"
-    const respFiltered = await filterNowPlaying(resp.data.results);
-    return respFiltered.slice(0, maxLength);
-  } else {
-    return resp.data.results.slice(0, maxLength);
-  }
-};
-
-const fetchTrending = async (
-  mediaType: "movie" | "tv",
-  maxLength: number,
-): Promise<MovieSearchProps[]> => {
-  const resp = await api.get(
+  }else{
+    resp = await api.get(
     `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=1`,
     options,
   );
-
+  }
+ 
   resp.data.results = resp.data.results.filter(
     (item: any) => item.overview?.trim() !== "",
   );
@@ -199,20 +185,6 @@ const fetchIntercalatedCategory = async (
   return result;
 };
 
-const fetchIntercalatedTrending = async (
-  maxLength: number,
-): Promise<MovieSearchProps[]> => {
-  const movie = await fetchTrending("movie", maxLength);
-  const tv = await fetchTrending("tv", maxLength);
-  const result: MovieSearchProps[] = [];
-
-  for (let i = 0; i < maxLength; i++) {
-    if (movie[i]) result.push(movie[i]);
-    if (tv[i]) result.push(tv[i]);
-  }
-
-  return result;
-};
 
 export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
   try {
@@ -223,7 +195,7 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
       options,
     );
 
-    const trending = await fetchIntercalatedTrending(maxLength);
+    const trending = await fetchIntercalatedCategory(0, maxLength);
     const action = await fetchIntercalatedCategory(28, maxLength);
     const drama = await fetchIntercalatedCategory(18, maxLength);
     const comedy = await fetchIntercalatedCategory(35, maxLength);
@@ -269,7 +241,7 @@ export const initialRequestMovie = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
 
-    const trending = await fetchTrending("movie", maxLength);
+    const trending = await fetchCategory("movie", 0, maxLength);
     const action = await fetchCategory("movie", 28, maxLength);
     const drama = await fetchCategory("movie", 18, maxLength);
     const comedy = await fetchCategory("movie", 35, maxLength);
@@ -306,7 +278,7 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
 
-    const trending = await fetchTrending("tv", maxLength);
+    const trending = await fetchCategory("tv", 0, maxLength);
     const actionNadventure = await fetchCategory("tv", 10759, maxLength);
     const drama = await fetchCategory("tv", 18, maxLength);
     const comedy = await fetchCategory("tv", 35, maxLength);
@@ -347,7 +319,7 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
     );
 
     const upComingResponse = await api.get(
-      "3/movie/upcoming",
+      "3/movie/upcoming?language=pt-BR&region=BR&page=1",
       options
     );
 
@@ -355,7 +327,7 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
       const response = await api.get(`3/movie/${movieId}/videos?language=pt-BR`, options);
       const trailers = response.data.results;
 
-      // Filtra o primeiro trailer válido do YouTube
+      
       const trailer = trailers.find(
         (t: any) => t.type === "Trailer" && t.site === "YouTube"
       );
@@ -363,7 +335,7 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
       return trailer?.key;
     };
 
-    // Atualiza nowPlaying com o campo key
+   
     const nowPlaying: MovieSearchProps[] = await Promise.all(
       nowPlayingResponse.data.results.map(async (movie: MovieSearchProps) => {
         const key = await getTrailerKey(Number(movie.id));
@@ -371,12 +343,19 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
       })
     );
 
-    // Atualiza upComing com o campo key
-    const upComing: MovieSearchProps[] = await Promise.all(
+    
+    let upComing: MovieSearchProps[] = await Promise.all(
       upComingResponse.data.results.map(async (movie: MovieSearchProps) => {
         const key = await getTrailerKey(Number(movie.id));
         return { ...movie, key };
       })
+    );
+
+    upComing = upComing.filter(
+      (upcomingMovie) =>
+        !nowPlaying.some(
+          (nowPlayingMovie) => nowPlayingMovie.id === upcomingMovie.id
+        )
     );
 
     return [nowPlaying, upComing];
@@ -385,7 +364,6 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
     return [];
   }
 };
-
 
 export const RequestMediabyId = async (id: string | string[]) => {
   if (id[id.length - 1] === "1") {
