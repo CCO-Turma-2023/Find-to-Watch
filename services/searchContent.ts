@@ -9,43 +9,106 @@ export const requestContents = async (
 ) => {
   const defaultUrl = `query=${mediaSearch}&include_adult=false&language=pt-BR&Region=BR&page=1`;
   const defaultUrlEn = `query=${mediaSearch}&include_adult=false&page=1`;
-  try {
-    const resp = await api.get(`3/search/movie?${defaultUrl}`, options);
-    const resp2 = await api.get(`3/search/movie?${defaultUrlEn}`, options);
-    const resp3 = await api.get(`3/search/tv?${defaultUrl}`, options);
-    const resp4 = await api.get(`3/search/tv?${defaultUrlEn}`, options);
+
+  const results: any[] = [];
+
+  const filter1 = selectFilter.includes(1);
+  const filter2 = selectFilter.includes(2);
+  const filter3 = selectFilter.includes(3);
+
+  // Se selectFilter está vazio ou é [1,2,3], buscar tudo
+  const fetchAll = selectFilter.length === 0 || (filter1 && filter2 && filter3) || selectFilter.sort().toString() === '1,2,3';
+
+  const fetchMovies = async () => {
+    const [resp, respEn] = await Promise.all([
+      api.get(`3/search/movie?${defaultUrl}`, options),
+      api.get(`3/search/movie?${defaultUrlEn}`, options),
+    ]);
 
     const mapOverviewsEn = new Map();
-    resp2.data.results.forEach((movie: any) => {
+    respEn.data.results.forEach((movie: any) => {
       mapOverviewsEn.set(movie.id, movie.overview?.trim());
     });
 
-    resp.data.results = resp.data.results.filter((movie: any) => {
+    const filteredMovies = resp.data.results.filter((movie: any) => {
       const overviewPt = movie.overview?.trim();
       const overviewEn = mapOverviewsEn.get(movie.id);
       return overviewPt !== overviewEn;
     });
 
-    const mapTvOverviewsEn = new Map();
-    resp4.data.results.forEach((tvShow: any) => {
-      mapTvOverviewsEn.set(tvShow.id, tvShow.overview?.trim());
+    return filteredMovies;
+  };
+
+  const fetchTvShows = async () => {
+    const [resp, respEn] = await Promise.all([
+      api.get(`3/search/tv?${defaultUrl}`, options),
+      api.get(`3/search/tv?${defaultUrlEn}`, options),
+    ]);
+
+    const mapOverviewsEn = new Map();
+    respEn.data.results.forEach((tvShow: any) => {
+      mapOverviewsEn.set(tvShow.id, tvShow.overview?.trim());
     });
 
-    resp3.data.results = resp3.data.results.filter((tvShow: any) => {
+    const filteredTvShows = resp.data.results.filter((tvShow: any) => {
       const overviewPt = tvShow.overview?.trim();
-      const overviewEn = mapTvOverviewsEn.get(tvShow.id);
+      const overviewEn = mapOverviewsEn.get(tvShow.id);
       return overviewPt !== overviewEn;
     });
 
-    const combined = [...resp.data.results, ...resp3.data.results];
+    return filteredTvShows;
+  };
 
-    combined.sort((a, b) => b.vote_count - a.vote_count);
+  const fetchNowPlaying = async () => {
+    const [resp, respEn] = await Promise.all([
+      api.get(`3/movie/now_playing?${defaultUrl}`, options),
+      api.get(`3/movie/now_playing?${defaultUrlEn}`, options),
+    ]);
 
-    setMedias(combined);
+    const mapOverviewsEn = new Map();
+    respEn.data.results.forEach((nowPlaying: any) => {
+      mapOverviewsEn.set(nowPlaying.id, nowPlaying.overview?.trim());
+    });
+
+    const filteredNowPlaying = resp.data.results.filter((nowPlaying: any) => {
+      const overviewPt = nowPlaying.overview?.trim();
+      const overviewEn = mapOverviewsEn.get(nowPlaying.id);
+      return overviewPt !== overviewEn;
+    });
+
+    return filteredNowPlaying;
+  };
+
+  try {
+    const promises: Promise<any[]>[] = [];
+
+    if (fetchAll || filter1) {
+      promises.push(fetchMovies());
+    }
+
+    if (fetchAll || filter2) {
+      promises.push(fetchTvShows());
+    }
+
+    if (fetchAll || filter3) {
+      promises.push(fetchNowPlaying());
+    }
+
+    const resolvedResults = await Promise.all(promises);
+
+    // Junta os arrays em um só
+    resolvedResults.forEach((res) => {
+      results.push(...res);
+    });
+
+    results.sort((a, b) => b.vote_count - a.vote_count);
+
+    setMedias(results);
   } catch (error) {
-    console.error("Erro ao buscar filmes:", error);
+    console.error("Erro ao buscar conteúdos:", error);
   }
 };
+
 
 const filterNowPlaying = async (list: any[]) => {
   const nowPlaying = await api.get(
