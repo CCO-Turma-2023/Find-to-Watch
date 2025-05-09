@@ -58,7 +58,6 @@ export default function Search() {
         <AntDesign name="search1" color={"white"} size={20} />
         <TextInput
           className="ml-2 flex-1 text-white"
-          placeholder="Busque algum conteúdo"
           onChangeText={changeTextInput}
           value={busca}
         />

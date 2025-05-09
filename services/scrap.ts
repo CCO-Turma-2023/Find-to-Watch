@@ -88,5 +88,19 @@ export async function getTheaters (idMovie : string | string[], idCity : string 
   } catch (error) {
     console.error("Erro ao buscar via backend:", error);
   }
+}
 
+export async function getTheaterInfo(title: string | undefined | null) {
+  try {
+    const code = await axios.get("https://server-find-to-watch.vercel.app/api/get-theaters-info", {
+      params: {
+        search: title
+      },
+    });
+
+    return code.data
+
+  } catch (error) {
+    console.error("Erro ao buscar via backend:", error);
+  }
 }
