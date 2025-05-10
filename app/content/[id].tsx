@@ -60,6 +60,8 @@ export default function Filmes() {
     findContent();
   }, [media]);
 
+  const year = currentMovie?.release_date ? new Date(currentMovie.release_date).getFullYear() : undefined;
+
   return (
     <View className="flex-1 gap-3 bg-black p-2">
      
@@ -87,6 +89,12 @@ export default function Filmes() {
           <Text className="text-white">
             <Text className="font-bold">{currentMovie?.title}</Text>
           </Text>
+
+          {year ? 
+          <Text className="text-zinc-300">
+            {year}
+          </Text> : null
+          }
 
           <Text className="text-zinc-300">
             {currentMovie?.overview && currentMovie?.overview?.length > 0
