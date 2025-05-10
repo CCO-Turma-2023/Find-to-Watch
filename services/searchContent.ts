@@ -191,9 +191,68 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
   try {
     const maxLength = 21;
 
-    const nowPlaying = await api.get(
-      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options,
+    let nowPlaying: MovieSearchProps[] = []
+    let nowPlaying2: MovieSearchProps[] = []
+
+    const currentYear = new Date().getFullYear();
+
+    const NowPlayingResponse = await axios.get("https://server-find-to-watch.vercel.app/api/get-films", {
+      params: {
+        code: 0
+      },
+    });
+
+    const nowPlayingPromises = NowPlayingResponse.data.map(async (res: string) => {
+      const searchNowPlayingResponse = await api.get(
+        `3/search/movie?language=pt-BR&query=${encodeURIComponent(res)}`,
+        options
+      );
+
+      const filteredResults = searchNowPlayingResponse.data.results.filter(
+      (movie: any) => {
+      const movieYear = new Date(movie.release_date).getFullYear();
+      return movieYear === currentYear || movieYear === (currentYear + 1)
+      })
+
+      return filteredResults.length > 0 ? filteredResults[0] : undefined;
+    });
+
+    const NowPlayingResultsArrays = await Promise.all(nowPlayingPromises);
+
+    nowPlaying = NowPlayingResultsArrays.flat();
+
+    nowPlaying = nowPlaying.filter((film) => film !== undefined)
+
+    const NowPlaying2Response = await axios.get("https://server-find-to-watch.vercel.app/api/get-films", {
+      params: {
+        code: 2
+      },
+    });
+
+    const nowPlaying2Promises = NowPlaying2Response.data.map(async (res: string) => {
+      const searchNowPlaying2Response = await api.get(
+        `3/search/movie?language=pt-BR&query=${encodeURIComponent(res)}`,
+        options
+      );
+
+      const filteredResults = searchNowPlaying2Response.data.results.filter(
+      (movie: any) => {
+      const movieYear = new Date(movie.release_date).getFullYear();
+      return movieYear === currentYear || movieYear === (currentYear + 1) || movieYear === (currentYear - 1)
+      }
+      );
+
+      return filteredResults.length > 0 ? filteredResults[0] : undefined;
+    });
+
+    const NowPlaying2ResultsArrays = await Promise.all(nowPlaying2Promises);
+
+    nowPlaying2 = NowPlaying2ResultsArrays.flat();
+
+    nowPlaying2 = nowPlaying2.filter(
+      (filme2) =>
+        filme2 !== undefined &&
+        !nowPlaying.some((filme1) => filme1?.id === filme2.id)
     );
 
     const trending = await fetchIntercalatedCategory(0, maxLength);
@@ -218,7 +277,7 @@ export const initialRequest = async (): Promise<MovieSearchProps[][]> => {
     }
 
     return [
-      nowPlaying.data.results,
+      [...nowPlaying, ...nowPlaying2],
       trending,
       action,
       drama,
@@ -318,6 +377,8 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
     let nowPlaying: MovieSearchProps[] = []
     let nowPlaying2: MovieSearchProps[] = []
 
+    const currentYear = new Date().getFullYear();
+
     const NowPlayingResponse = await axios.get("https://server-find-to-watch.vercel.app/api/get-films", {
       params: {
         code: 0
@@ -329,7 +390,14 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
         `3/search/movie?language=pt-BR&query=${encodeURIComponent(res)}`,
         options
       );
-      return searchNowPlayingResponse.data.results[0];
+
+      const filteredResults = searchNowPlayingResponse.data.results.filter(
+      (movie: any) => {
+      const movieYear = new Date(movie.release_date).getFullYear();
+      return movieYear === currentYear || movieYear === (currentYear + 1)
+      })
+
+      return filteredResults.length > 0 ? filteredResults[0] : undefined;
     });
 
     const NowPlayingResultsArrays = await Promise.all(nowPlayingPromises);
@@ -343,8 +411,6 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
         code: 1
       },
     });
-
-    const currentYear = new Date().getFullYear();
     
     const upComingPromises = upComingResponse.data.map(async (res: string) => { 
         const searchUpComingResponse = await api.get(
@@ -355,7 +421,7 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
       const filteredResults = searchUpComingResponse.data.results.filter(
       (movie: any) => {
       const movieYear = new Date(movie.release_date).getFullYear();
-      return movieYear === currentYear
+      return movieYear === currentYear || movieYear === (currentYear + 1)
     }
   );
 
@@ -383,7 +449,7 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
       const filteredResults = searchNowPlaying2Response.data.results.filter(
       (movie: any) => {
       const movieYear = new Date(movie.release_date).getFullYear();
-      return movieYear === currentYear || Number.isNaN(movieYear)
+      return movieYear === currentYear || movieYear === (currentYear + 1) || movieYear === (currentYear - 1)
       }
       );
 

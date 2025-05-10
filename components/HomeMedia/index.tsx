@@ -5,7 +5,7 @@ import { MovieSearchProps } from "@/interfaces/search-interface";
 import { useEffect } from "react";
 
 const categorias = [
-  { titulo: "Em Cartaz", index: 0 },
+  { titulo: "Nos Cinemas", index: 0 },
   { titulo: "Tendências", index: 1 },
   { titulo: "Ação", index: 2 },
   { titulo: "Drama", index: 3 },

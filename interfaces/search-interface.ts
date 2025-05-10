@@ -5,4 +5,5 @@ export interface MovieSearchProps {
   poster_path: string;
   key: string | undefined
   movie: boolean;
+  release_date: string
 }
