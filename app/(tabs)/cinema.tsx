@@ -1,32 +1,38 @@
-import { Text, View, FlatList, Image } from "react-native";
+import { Text, View, FlatList, Image, ScrollView } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {Link, } from "expo-router"
 import { useContextCinema } from "@/contexts/ContextCinema";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import YoutubePlayer from "react-native-youtube-iframe";
-
+import { useState } from "react";
+import { TheaterInterface } from "@/interfaces/theater-interface";
 
 const categorias = [
-  { titulo: "Em Cartaz", index: 0 },
-  { titulo: "Em Breve", index: 1 },
-  { titulo: "Trailers", index: 2 },
+  { titulo: "Estreias da Semana", index: 0 },
+  { titulo: "Também em Cartaz", index: 1 },
+  { titulo: "Em Breve", index: 2 },
+  { titulo: "Trailers", index: 3 },
 ];
 
 
 export default function Filmes(){
     const { media } = useContextCinema();
+    const { cinemas } = useContextCinema();
 
-    const Trailers = [...media[0], ...media[1]];
+    const Trailers = [...media[0], ...media[1], ...media[2]];
 
     return(
         <View className="bg-black flex-1">
             <View className="m-2 flex flex-col gap-2 ">
                 <Text className="text-white">Cinemas</Text>
-                <View className="flex flex-row">
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} className="flex flex-row"  contentContainerStyle={{ gap: 8 }}>
                     <Link href={"/theater"} className={`p-2 flex flex-row border border-white rounded-xl`}>
                         <AntDesign name="plus" color="white" size={20}></AntDesign>
                     </Link>
-                </View>
+                    {cinemas && (cinemas.map((cinema: TheaterInterface) => (
+                      <Text className="text-white border rounded-xl border-white p-2" key={cinema.codigo}>{cinema.cinema}</Text>
+                    )))}
+                </ScrollView>
             </View>
             <FlatList
                   data={categorias}

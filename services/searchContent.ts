@@ -1,5 +1,6 @@
 import { api, options } from "./api";
 import { MovieSearchProps } from "@/interfaces/search-interface";
+import axios from "axios";
 import React from "react";
 
 export const requestContents = async (
@@ -313,14 +314,90 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
 
 export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
   try {
-    const nowPlayingResponse = await api.get(
-      "3/movie/now_playing?language=pt-BR&region=BR&page=1",
-      options
-    );
+    let upComing: MovieSearchProps[] = []
+    let nowPlaying: MovieSearchProps[] = []
+    let nowPlaying2: MovieSearchProps[] = []
 
-    const upComingResponse = await api.get(
-      "3/movie/upcoming?language=pt-BR&region=BR&page=1",
-      options
+    const NowPlayingResponse = await axios.get("https://server-find-to-watch.vercel.app/api/get-films", {
+      params: {
+        code: 0
+      },
+    });
+
+    const nowPlayingPromises = NowPlayingResponse.data.map(async (res: string) => {
+      const searchNowPlayingResponse = await api.get(
+        `3/search/movie?language=pt-BR&query=${encodeURIComponent(res)}`,
+        options
+      );
+      return searchNowPlayingResponse.data.results[0];
+    });
+
+    const NowPlayingResultsArrays = await Promise.all(nowPlayingPromises);
+
+    nowPlaying = NowPlayingResultsArrays.flat();
+
+    nowPlaying = nowPlaying.filter((film) => film !== undefined)
+
+    const upComingResponse = await axios.get("https://server-find-to-watch.vercel.app/api/get-films", {
+      params: {
+        code: 1
+      },
+    });
+
+    const currentYear = new Date().getFullYear();
+    
+    const upComingPromises = upComingResponse.data.map(async (res: string) => { 
+        const searchUpComingResponse = await api.get(
+        `3/search/movie?language=pt-BR&query=${encodeURIComponent(res)}`,
+        options
+      );
+
+      const filteredResults = searchUpComingResponse.data.results.filter(
+      (movie: any) => {
+      const movieYear = new Date(movie.release_date).getFullYear();
+      return movieYear === currentYear
+    }
+  );
+
+      return filteredResults.length > 0 ? filteredResults[0] : undefined;
+    });
+
+    const UpComingResultsArrays = await Promise.all(upComingPromises);
+
+    upComing = UpComingResultsArrays.flat();
+
+    upComing = upComing.filter((film) => film !== undefined)
+
+    const NowPlaying2Response = await axios.get("https://server-find-to-watch.vercel.app/api/get-films", {
+      params: {
+        code: 2
+      },
+    });
+
+    const nowPlaying2Promises = NowPlaying2Response.data.map(async (res: string) => {
+      const searchNowPlaying2Response = await api.get(
+        `3/search/movie?language=pt-BR&query=${encodeURIComponent(res)}`,
+        options
+      );
+
+      const filteredResults = searchNowPlaying2Response.data.results.filter(
+      (movie: any) => {
+      const movieYear = new Date(movie.release_date).getFullYear();
+      return movieYear === currentYear || Number.isNaN(movieYear)
+      }
+      );
+
+      return filteredResults.length > 0 ? filteredResults[0] : undefined;
+    });
+
+    const NowPlaying2ResultsArrays = await Promise.all(nowPlaying2Promises);
+
+    nowPlaying2 = NowPlaying2ResultsArrays.flat();
+
+    nowPlaying2 = nowPlaying2.filter(
+      (filme2) =>
+        filme2 !== undefined &&
+        !nowPlaying.some((filme1) => filme1?.id === filme2.id)
     );
 
     const getTrailerKey = async (movieId: number): Promise<string | undefined> => {
@@ -335,30 +412,28 @@ export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
       return trailer?.key;
     };
 
-   
-    const nowPlaying: MovieSearchProps[] = await Promise.all(
-      nowPlayingResponse.data.results.map(async (movie: MovieSearchProps) => {
+    upComing = await Promise.all(
+        upComing.map(async (movie: MovieSearchProps) => {
+          const key = await getTrailerKey(Number(movie.id));
+          return { ...movie, key };
+        })
+    );
+
+    nowPlaying = await Promise.all(
+      nowPlaying.map(async (movie: MovieSearchProps) => {
         const key = await getTrailerKey(Number(movie.id));
         return { ...movie, key };
       })
     );
 
-    
-    let upComing: MovieSearchProps[] = await Promise.all(
-      upComingResponse.data.results.map(async (movie: MovieSearchProps) => {
+    nowPlaying2 = await Promise.all(
+      nowPlaying2.map(async (movie: MovieSearchProps) => {
         const key = await getTrailerKey(Number(movie.id));
         return { ...movie, key };
       })
     );
 
-    upComing = upComing.filter(
-      (upcomingMovie) =>
-        !nowPlaying.some(
-          (nowPlayingMovie) => nowPlayingMovie.id === upcomingMovie.id
-        )
-    );
-
-    return [nowPlaying, upComing];
+    return [nowPlaying, nowPlaying2, upComing];
   } catch (error) {
     console.error("Erro ao buscar filmes:", error);
     return [];

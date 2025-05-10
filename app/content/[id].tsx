@@ -7,13 +7,14 @@ import { RequestMediabyId } from "@/services/searchContent";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
+import { useContextCinema } from "@/contexts/ContextCinema";
 
 export default function Filmes() {
 
   const { id } = useLocalSearchParams();
   const [currentMovie, setCurrentMovie] = useState<MovieSearchProps | null>(null);
   const [nowPlaying, setNowPlaying] = useState(false);
-  const { media } = useContextHome();
+  const { media } = useContextCinema();
 
   const OnPress = async () => {
     const result = await getFilmId(currentMovie!.title);
@@ -24,10 +25,17 @@ export default function Filmes() {
     const findContent = async () => {
       let foundMovie = null;
 
-      if (media && media[0]?.length > 0) {
+      if (media && media[0]?.length > 0 && media[1]?.length > 0) {
         for (let i in media[0]) {
           if (id.slice(0, -1) == media[0][i].id) {
             foundMovie = media[0][i];
+            setNowPlaying(true);
+            break;
+          }
+        }
+        for (let i in media[1]) {
+          if (id.slice(0, -1) == media[1][i].id) {
+            foundMovie = media[1][i];
             setNowPlaying(true);
             break;
           }

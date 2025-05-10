@@ -1,9 +1,6 @@
 import { Tabs } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { ProviderHome } from "@/contexts/ContextHome";
-import { ProviderMovie } from "@/contexts/ContextMovie";
-import { ProviderTVShow } from "@/contexts/ContextTVShow";
 import Header from "@/components/HeaderComponent";
 import {
   SafeAreaView,
@@ -14,7 +11,6 @@ import {
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ProviderCinema } from "@/contexts/ContextCinema";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
@@ -22,10 +18,6 @@ export default function TabLayout() {
     Platform.OS === "android" ? RNStatusBar.currentHeight || 0 : insets.top;
 
   return (
-    <ProviderHome>
-      <ProviderMovie>
-        <ProviderTVShow>
-          <ProviderCinema>
             <SafeAreaView className="flex-1 bg-blue-600">
               <View
                 style={{ height: statusBarHeight }}
@@ -120,9 +112,5 @@ export default function TabLayout() {
                 </Tabs>
               </View>
             </SafeAreaView>
-          </ProviderCinema>
-        </ProviderTVShow>
-      </ProviderMovie>
-    </ProviderHome>
   );
 }
