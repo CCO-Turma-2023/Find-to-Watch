@@ -57,18 +57,23 @@ export default function Filmes() {
         foundMovie["movie"] = false;
       }
 
+      setCurrentMovie(foundMovie);
+
       const contentProviders = await requestWatchProvides(id);
 
-      setCurrentMovie(foundMovie);
+      if (!contentProviders)
+      {
+        return;
+      }
 
       const uniqueContentProviders = Array.from(
         new Map<string, contentProvider>(contentProviders.map((p : contentProvider) => [p.provider_name, p])).values()
       );
 
-      setWatchProviders(uniqueContentProviders)
-
       if (contentProviders)
       {
+        setWatchProviders(uniqueContentProviders)
+
         const links = await getProviderLink(id.slice(0, -1))
 
         console.log(links)

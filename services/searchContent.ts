@@ -1,5 +1,5 @@
 import { api, options } from "./api";
-import { MovieSearchProps } from "@/interfaces/search-interface";
+import { MovieSearchProps, contentProvider } from "@/interfaces/search-interface";
 import axios from "axios";
 import React from "react";
 
@@ -230,5 +230,17 @@ export const requestWatchProvides = async (id: string | string[]) => {
 
   const res = await api.get(request, options);
 
-  return [...res.data.results["BR"].ads, ...res.data.results["BR"].flatrate];
+  let contentArray:contentProvider[] = []
+
+  if (res.data.results["BR"].ads)
+  {
+    contentArray = [...res.data.results["BR"].ads]
+  }
+
+  if(res.data.results["BR"].flatrate)
+  {
+    contentArray = [...contentArray, ...res.data.results["BR"].flatrate]
+  }
+
+  return contentArray.length > 0 ? contentArray : undefined;
 }
