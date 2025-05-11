@@ -17,7 +17,6 @@ export default function Theater(){
         const [showMap, setShowMap] = useState(true)
         const [busca, setBusca] = useState("");
         const { setCine } = useContextCinema();
-        const first = useRef(true);
 
         const buscarCinemas = async () => {
             setShowMap(false)
@@ -38,14 +37,10 @@ export default function Theater(){
 
         useEffect(() => {
             (async () => {
-                if (busca.trim() === "" && !first.current) {
+                if (busca.trim() === "") {
                     setShowMap(true);
                     const theatersInfo = await getTheaterInfo(subregion);
                     setTheaters(theatersInfo);
-                }
-
-                if(first.current){
-                    first.current = false
                 }
             })();
         }, [busca]);
