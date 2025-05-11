@@ -7,3 +7,15 @@ export interface MovieSearchProps {
   movie: boolean;
   release_date: string
 }
+
+export interface contentProvider {
+  display_priority: string,
+  logo_path: string,
+  provider_name: string,
+  provider_id: string
+}
+
+export interface providerLink {
+  title: string,
+  link: string
+}

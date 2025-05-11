@@ -214,3 +214,21 @@ export const RequestMediabyId = async (id: string | string[]) => {
   const res = await api.get(`${endpoint}?language=pt-BR&Region=BR`, options);
   return res.data;
 };
+
+export const requestWatchProvides = async (id: string | string[]) => {
+
+  let request;
+
+  if (id[id.length - 1] === "1")
+  {
+    request = `3/movie/${id.slice(0, -1)}/watch/providers`
+  }
+  else
+  {
+    request = `3/tv/${id.slice(0, -1)}/watch/providers`
+  }
+
+  const res = await api.get(request, options);
+
+  return [...res.data.results["BR"].ads, ...res.data.results["BR"].flatrate];
+}
