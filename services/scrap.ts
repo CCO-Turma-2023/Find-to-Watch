@@ -104,3 +104,19 @@ export async function getTheaterInfo(title: string | undefined | null) {
     console.error("Erro ao buscar via backend:", error);
   }
 }
+
+
+export async function getProviderLink(id: string | undefined | null | string[]) {
+  try {
+    const code = await axios.get("https://server-find-to-watch.vercel.app/api/get-url", {
+      params: {
+        code: id
+      },
+    });
+
+    return code.data
+
+  } catch (error) {
+    console.error("Erro ao buscar via backend:", error);
+  }
+}

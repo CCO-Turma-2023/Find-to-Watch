@@ -13,3 +13,9 @@ export interface TheatersSearchProps {
     nome: string;
     sessoes: Session[];
   }
+
+ export interface TheaterInterface{
+    codigo: string,
+    cinema:string,
+    endereco: string
+}
