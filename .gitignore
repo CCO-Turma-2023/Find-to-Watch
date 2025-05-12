@@ -48,4 +48,4 @@ yarn-error.*
 
 # example file
 app-example
-env
+.env
