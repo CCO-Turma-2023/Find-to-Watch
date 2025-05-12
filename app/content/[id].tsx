@@ -74,13 +74,10 @@ export default function Filmes() {
       {
         setWatchProviders(uniqueContentProviders)
 
-        const links = await getProviderLink(id.slice(0, -1))
-
-        console.log(links)
+        const links = await getProviderLink(id)
 
         setproviderLinks(links)
       }
-
 
     };
 
