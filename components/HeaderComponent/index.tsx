@@ -3,7 +3,6 @@ import { Link } from "expo-router";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { LinearGradient } from "expo-linear-gradient";
 import logo from "@/assets/images/logo.png";
-import icon from "@/assets/images/icon.png";
 
 export default function Header() {
   return (

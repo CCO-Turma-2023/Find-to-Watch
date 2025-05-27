@@ -38,18 +38,18 @@ export default function SpecificCinema() {
           data={specificCinema}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View className="mt-4 flex items-center justify-center">
+            <View className="mt-5 flex items-center justify-center">
               <Image
                 source={{ uri: item.poster_path }}
                 className="h-60 w-44 rounded"
                 resizeMode="cover"
               />
 
-              <Text className="mb-2 text-2xl font-bold text-white">
+              <Text className="mb-2 text-2xl font-bold text-white pt-3">
                 {item.title}
               </Text>
 
-              <Text className="mb-4 text-base text-white">{item.overview}</Text>
+              <Text className="mb-3 text-base text-white">{item.overview}</Text>
 
               {/* Horários Dublados */}
 
@@ -58,7 +58,7 @@ export default function SpecificCinema() {
                   <Text className="mb-1 font-semibold text-white">
                     Dublado:
                   </Text>
-                  <View className="mb-4 flex-row flex-wrap">
+                  <View className="mb-5 flex-row flex-wrap">
                     {item.showtimesDubbed.map((sessao, index) => (
                       <Text
                         key={index}

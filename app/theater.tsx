@@ -32,8 +32,6 @@ export default function Theater() {
       const theatersInfo = await getTheaterInfo(busca.trim());
       setTheaters(theatersInfo);
 
-      console.log("Theaters:", JSON.stringify(theatersInfo, null, 2));
-
       Keyboard.dismiss();
     } catch (error) {
       console.error("Erro na busca:", error);

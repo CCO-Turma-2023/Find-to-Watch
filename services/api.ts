@@ -5,7 +5,7 @@ const { tmdbToken } = Constants.expoConfig?.extra || {};
 
 export const api = axios.create({
   baseURL: "https://api.themoviedb.org/",
-  timeout: 10000, // opcional: tempo limite de requisição
+  timeout: 10000, // tempo limite de requisição
 });
 
 export const options = {

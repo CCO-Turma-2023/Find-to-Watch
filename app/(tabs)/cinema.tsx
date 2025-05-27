@@ -4,7 +4,7 @@ import { Link } from "expo-router";
 import { useContextCinema } from "@/contexts/ContextCinema";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import YoutubePlayer from "react-native-youtube-iframe";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { TheaterInterface } from "@/interfaces/theater-interface";
 import { TouchableOpacity } from "react-native";
 
@@ -23,7 +23,6 @@ export default function Filmes() {
   useEffect(() => {
     const getAll = async () => {
       const c = await getAllDataFromAsyncStorage();
-      console.log("opaaa", c);
       setCinemas(c);
     };
     getAll();

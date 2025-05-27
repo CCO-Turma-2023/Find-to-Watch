@@ -86,7 +86,7 @@ export default function Section() {
             }
             if (horarioCinema.legendados?.length) {
               sessoes.push({
-                descricao: Descricao("13 de abril de 2025 - Versão original/legendado", data),
+                descricao: Descricao("13 de abril de 2025 - Versão Original/Legendado", data),
                 horarios: horarioCinema.legendados,
               });
             }

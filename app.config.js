@@ -8,7 +8,7 @@ export default {
     orientation: "portrait",
     icon: "./assets/images/logo.png",
     scheme: "findtowatch",
-    userInterfaceStyle: "automatic", // Já configurado para evitar o warning
+    userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
       supportsTablet: true,

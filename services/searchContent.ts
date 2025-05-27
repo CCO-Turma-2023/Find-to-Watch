@@ -124,7 +124,7 @@ export const requestContents = async (
     setMedias([]);
     return;
   }
-  const defaultUrl = `query=${mediaSearch}&language=pt-BR&Region=BR&page=1`;
+  const defaultUrl = `query=${mediaSearch}&language=pt-BR&region=BR&page=1`;
   const defaultUrlEn = `query=${mediaSearch}&page=1`;
   let results: MovieSearchProps[] = [];
 
@@ -282,7 +282,7 @@ export const RequestMediabyId = async (id: string | string[]) => {
   const endpoint = isMovie
     ? `3/movie/${id.slice(0, -1)}`
     : `3/tv/${id.slice(0, -1)}`;
-  const res = await api.get(`${endpoint}?language=pt-BR&Region=BR`, options);
+  const res = await api.get(`${endpoint}?language=pt-BR&region=BR`, options);
   return res.data;
 };
 

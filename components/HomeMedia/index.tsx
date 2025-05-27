@@ -2,10 +2,9 @@ import { useContextHome } from "@/contexts/ContextHome";
 import { FlatList, Text, View, Image } from "react-native";
 import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
-import { useEffect } from "react";
 
 const categorias = [
-  { titulo: "Nos Cinemas", index: 0 },
+  { titulo: "Em Cartaz nos Cinemas", index: 0 },
   { titulo: "Tendências", index: 1 },
   { titulo: "Ação", index: 2 },
   { titulo: "Drama", index: 3 },

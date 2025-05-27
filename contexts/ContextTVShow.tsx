@@ -7,7 +7,6 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import { useContextHome } from "./ContextHome";
 
 interface ContextTVShowType {
   media: MovieSearchProps[][];

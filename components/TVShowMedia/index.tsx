@@ -2,8 +2,6 @@ import { FlatList, Text, View, Image } from "react-native";
 import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import { useContextTVShow } from "@/contexts/ContextTVShow";
-import { useContextHome } from "@/contexts/ContextHome";
-import { useEffect } from "react";
 
 const categorias = [
   { titulo: "Tendências", index: 0 },

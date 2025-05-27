@@ -1,4 +1,3 @@
-// components/CalendarSlider.tsx
 import { Text, ScrollView, Pressable } from "react-native";
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";

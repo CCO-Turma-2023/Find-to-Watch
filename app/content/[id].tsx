@@ -1,8 +1,7 @@
-import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking  } from "react-native";
+import { View, Text, Pressable, Image, ScrollView, TouchableOpacity, Linking } from "react-native";
 import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
 import { getFilmId } from "@/services/scrap";
-import { useContextHome } from "@/contexts/ContextHome";
 import { RequestMediabyId, requestWatchProvides } from "@/services/searchContent";
 import { MovieSearchProps, contentProvider, providerLink } from "@/interfaces/search-interface";
 import { Ionicons } from "@expo/vector-icons";
@@ -61,17 +60,15 @@ export default function Filmes() {
 
       const contentProviders = await requestWatchProvides(id);
 
-      if (!contentProviders)
-      {
+      if (!contentProviders) {
         return;
       }
 
       const uniqueContentProviders = Array.from(
-        new Map<string, contentProvider>(contentProviders.map((p : contentProvider) => [p.provider_name, p])).values()
+        new Map<string, contentProvider>(contentProviders.map((p: contentProvider) => [p.provider_name, p])).values()
       );
 
-      if (contentProviders)
-      {
+      if (contentProviders) {
         setWatchProviders(uniqueContentProviders)
 
         const links = await getProviderLink(id)
@@ -86,22 +83,19 @@ export default function Filmes() {
 
 
   const matchLinktoProvider = (content: contentProvider) => {
-    if (!providerLinks)
-    {
+    if (!providerLinks) {
       return;
     }
 
     let url;
 
     providerLinks.forEach(element => {
-      if (element.title.includes(content.provider_name))
-      {
+      if (element.title.includes(content.provider_name)) {
         url = element.link;
       }
     });
 
-    if (!url)
-    {
+    if (!url) {
       return;
     }
 
@@ -113,16 +107,13 @@ export default function Filmes() {
   return (
     <ScrollView className="flex-1 gap-3 bg-black p-2" showsVerticalScrollIndicator={false}>
       <View className="flex-1 gap-3 bg-black p-2">
-      
+
         <StatusBar style="light" backgroundColor="black" translucent={false} />
 
-        
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={30} color="#ffffff" />
         </Pressable>
 
-
-      
         <Image
           source={{
             uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
@@ -141,10 +132,10 @@ export default function Filmes() {
               <Text className="font-bold">{currentMovie?.title}</Text>
             </Text>
 
-            {year ? 
-            <Text className="text-zinc-300">
-              {year}
-            </Text> : null
+            {year ?
+              <Text className="text-zinc-300">
+                {year}
+              </Text> : null
             }
 
             <Text className="text-zinc-300">
@@ -168,13 +159,11 @@ export default function Filmes() {
                           />
                         </TouchableOpacity>
                       </View>
-  )
+                    )
                   ))}
                 </>
               )}
-          </View>}
-
-            
+            </View>}
 
             {nowPlaying && (
               <Pressable className="flex w-full items-center" onPress={OnPress}>

@@ -1,5 +1,4 @@
 import { View, Image, ScrollView } from "react-native";
-
 import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 
