@@ -82,7 +82,7 @@ export default function Theater() {
       <View className="flex flex-1 flex-col items-center">
         {showMap && (
           <MapView
-            style={{ width: "100%", height: "100%" }}
+            style={{ width: "70%", height: "70%" }}
             provider={PROVIDER_GOOGLE}
             region={region}
           >
