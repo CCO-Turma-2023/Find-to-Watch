@@ -33,7 +33,7 @@ export default function Filmes() {
   return (
     <View className="flex-1 bg-black">
       <View className="m-2 flex flex-col gap-2">
-        <Text className="text-white">Cinemas</Text>
+        <Text className="text-white font-bold">Cinemas</Text>
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}

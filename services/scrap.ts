@@ -1,3 +1,4 @@
+import { TheaterProps } from "@/interfaces/theater-interface";
 import axios from "axios";
 
 export async function getFilmId(title: string | undefined) {
@@ -48,15 +49,84 @@ export async function getRegioes(code:string | string[]) {
 export async function getTheaters (idMovie : string | string[], idCity : string | string[], data : string) {
 
   try {
-    const response = await axios.get("https://server-find-to-watch.vercel.app/api/get-theaters", {
-      params: {
-        idMovie,
-        idCity, 
-        data
-      },
+
+    const response = await axios.get(`https://www.adorocinema.com/_/showtimes/movie-${idMovie}/near-${idCity}/d-${data}/`, {
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'User-Agent': 'Mozilla/5.0'
+      }
     });
 
-    const cinemas = response.data
+    const cinemas : TheaterProps[] = [];
+    const results = response.data?.results ?? [];
+    const pages = response.data?.pagination.totalPages
+
+    results.forEach((item:any) => {
+      const nomeCinema = item.theater?.name ?? "Cinema não identificado";
+
+      const horariosDublados = (item.showtimes?.dubbed ?? []).map((sessao:any) => {
+        return new Date(sessao.startsAt).toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "America/Sao_Paulo"
+        });
+      });
+
+      const horariosLegendados = (item.showtimes?.original ?? []).map((sessao:any) => {
+        return new Date(sessao.startsAt).toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "America/Sao_Paulo"
+        });
+      });
+
+      cinemas.push({
+        cinema: nomeCinema,
+        dublados: horariosDublados,
+        legendados: horariosLegendados
+      });
+    });
+
+    for(let i = 2; i<= pages; i++){
+      const response = await axios.get(`https://www.adorocinema.com/_/showtimes/movie-${idMovie}/near-${idCity}/d-${data}/?page=${i}`, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'User-Agent': 'Mozilla/5.0'
+        }
+      });
+
+      const results = response.data?.results ?? [];
+
+      results.forEach((item:any) => {
+        const nomeCinema = item.theater?.name ?? "Cinema não identificado";
+  
+        const horariosDublados = (item.showtimes?.dubbed ?? []).map((sessao:any) => {
+          return new Date(sessao.startsAt).toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: "America/Sao_Paulo"
+          });
+        });
+  
+        const horariosLegendados = (item.showtimes?.original ?? []).map((sessao:any) => {
+          return new Date(sessao.startsAt).toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+            timeZone: "America/Sao_Paulo"
+          });
+        });
+  
+        cinemas.push({
+          cinema: nomeCinema,
+          dublados: horariosDublados,
+          legendados: horariosLegendados
+        });
+      });
+    }
 
     const addHours = (time: string, hoursToAdd: number): string => {
       const [hourStr, minuteStr] = time.split(':');

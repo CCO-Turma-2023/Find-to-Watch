@@ -63,20 +63,15 @@ export const ProviderCinema = ({ children }: { children: ReactNode }) => {
       const stores = await AsyncStorage.multiGet(keys);
 
       const result: TheaterInterface[] = stores.map(([codigo, value]) => {
+        let c
         if (value) {
-          const c = JSON.parse(value);
+          c = JSON.parse(value);
+        }
           return {
             codigo,
             cinema: c.cinema ?? "",
             endereco: c.endereco ?? "",
           };
-        } else {
-          return {
-            codigo,
-            cinema: "",
-            endereco: "",
-          };
-        }
       });
 
       return result;

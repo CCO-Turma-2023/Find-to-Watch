@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Pressable,
+  Image
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { PROVIDER_GOOGLE } from "react-native-maps";
@@ -18,18 +19,32 @@ import { router } from "expo-router";
 import { TheaterInterface } from "@/interfaces/theater-interface";
 import { useContextCinema } from "@/contexts/ContextCinema";
 import { useLocation } from "@/contexts/ContextLocation";
+import * as Location from 'expo-location';
+
+interface MarkerProps{
+  latitude: number;
+  longitude: number;
+  cinema: string;
+}
 
 export default function Theater() {
   const { region, theaters, subregion, setTheaters } = useLocation();
   const [showMap, setShowMap] = useState(true);
   const [busca, setBusca] = useState("");
-  const { setCine } = useContextCinema();
+  const { setCine, cinemas } = useContextCinema();
+  const [markers, setMarkers] = useState<MarkerProps[]>([]);
+  const mapRef = useRef<MapView | null>(null);
 
   const buscarCinemas = async () => {
     setShowMap(false);
     try {
       if (!busca.trim()) return;
-      const theatersInfo = await getTheaterInfo(busca.trim());
+      let theatersInfo = await getTheaterInfo(busca.trim());
+
+      theatersInfo = theatersInfo.filter((t:any) => {
+        return  !cinemas.some((c) => c.codigo === t.codigo)
+      })
+
       setTheaters(theatersInfo);
 
       Keyboard.dismiss();
@@ -43,15 +58,70 @@ export default function Theater() {
     router.dismiss();
   };
 
+useEffect(() => {
+  (async () => {
+    if (busca.trim() === "") {
+      setShowMap(true);
+
+      let theatersInfo = await getTheaterInfo(subregion);
+
+      theatersInfo = theatersInfo.filter((t: any) => {
+        return !cinemas.some((c) => c.codigo === t.codigo);
+      });
+
+      const coordinates = await Promise.all(
+        theatersInfo.map(async (t: any) => {
+          try {
+            const results = await Location.geocodeAsync(t.endereco);
+            if (results.length > 0) {
+              const { latitude, longitude } = results[0];
+              return {
+                latitude,
+                longitude,
+                cinema: t.cinema,
+              };
+            } else {
+              console.warn("Endereço não encontrado:", t.endereco);
+              return null;
+            }
+          } catch (error) {
+            console.error("Erro ao geocodificar:", t.endereco, error);
+            return null;
+          }
+        })
+      );
+
+      const validMarkers = coordinates.filter(Boolean);
+      setMarkers(validMarkers);
+
+      setTheaters(theatersInfo);
+    }
+  })();
+}, [busca]);
+
   useEffect(() => {
-    (async () => {
-      if (busca.trim() === "") {
-        setShowMap(true);
-        const theatersInfo = await getTheaterInfo(subregion);
-        setTheaters(theatersInfo);
+    if ((markers.length > 0 || region) && mapRef.current) {
+      const coordinates = [
+        ...markers.map(m => ({
+          latitude: m.latitude,
+          longitude: m.longitude,
+        })),
+      ];
+
+      if (region) {
+        coordinates.push({
+          latitude: region.latitude,
+          longitude: region.longitude,
+        });
       }
-    })();
-  }, [busca]);
+
+      mapRef.current.fitToCoordinates(coordinates, {
+        edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
+        animated: true,
+      });
+    }
+  }, [markers, region]);
+
 
   if (!region) return null;
 
@@ -80,11 +150,24 @@ export default function Theater() {
       <View className="flex flex-1 flex-col items-center">
         {showMap && (
           <MapView
+            ref={mapRef}
             style={{ width: "70%", height: "70%" }}
             provider={PROVIDER_GOOGLE}
             region={region}
           >
-            <Marker coordinate={region} />
+            <Marker coordinate={region} title="Sua Localização"></Marker>
+            {markers && markers.map((marker, index) => (
+              <Marker
+                key={index}
+                coordinate={{
+                  latitude: marker.latitude,
+                  longitude: marker.longitude,
+                }}
+                pinColor="yellow"
+                title={marker.cinema}
+              >
+              </Marker>
+            ))}
           </MapView>
         )}
 
