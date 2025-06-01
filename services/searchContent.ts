@@ -27,7 +27,7 @@ const fetchFromServer = async (
       `3/search/movie?language=pt-BR&query=${encodeURIComponent(res.title)}`,
       options,
     );
-    const filtered = searchResp.data.results.filter((movie: any) => {
+    const filtered = searchResp.data.results.filter((movie: any) => {      
       const year = new Date(movie.release_date).getFullYear();
       return yearRange.includes(year);
     });
@@ -52,12 +52,8 @@ const filterOutNowPlaying = async (
 
 const mergeNowPlaying = async () => {
   const currentYear = new Date().getFullYear();
-  const now = await fetchFromServer(0, [currentYear, currentYear + 1]);
-  const pastFuture = await fetchFromServer(2, [
-    currentYear - 1,
-    currentYear,
-    currentYear + 1,
-  ]);
+  const now = await fetchFromServer(0, [currentYear -1, currentYear, currentYear + 1]);
+  const pastFuture = await fetchFromServer(2, [currentYear - 1, currentYear, currentYear + 1,]);
 
   const ids = new Set(now.map((m) => String(m.id)));
   const unique = pastFuture.filter((m) => !ids.has(String(m.id)));
@@ -238,13 +234,9 @@ export const initialRequestTVShow = async (): Promise<MovieSearchProps[][]> => {
 export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
   try {
     const currentYear = new Date().getFullYear();
-    const nowPlaying = await fetchFromServer(0, [currentYear, currentYear + 1]);
-    const upComing = await fetchFromServer(1, [currentYear, currentYear + 1]);
-    const nowPlaying2 = await fetchFromServer(2, [
-      currentYear - 1,
-      currentYear,
-      currentYear + 1,
-    ]);
+    const nowPlaying = await fetchFromServer(0, [currentYear - 1, currentYear, currentYear + 1]);
+    const upComing = await fetchFromServer(1, [currentYear -1, currentYear, currentYear + 1]);
+    const nowPlaying2 = await fetchFromServer(2, [currentYear - 1, currentYear, currentYear + 1]);
 
     const existingIds = new Set(nowPlaying.map((m) => String(m.id)));
     const uniqueNowPlaying2 = nowPlaying2.filter(
