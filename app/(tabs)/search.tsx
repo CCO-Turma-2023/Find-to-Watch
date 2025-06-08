@@ -1,20 +1,19 @@
 import { TextInput, View, Text } from "react-native";
-import { router } from "expo-router";
 import { requestContents } from "@/services/searchContent";
 import ShowMedia from "@/components/AllShowMedia";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import { useEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { StatusBar } from "expo-status-bar";
 import { Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 
 export default function Search() {
   const [media, setMedia] = useState<MovieSearchProps[]>([]);
   const [busca, setBusca] = useState("");
   const [selectFilter, setSelectFilter] = useState<number[]>([]);
+  const tabBarHeight = useBottomTabBarHeight();
 
   const changeTextInput = (text: string) => {
     requestContents(text, setMedia, selectFilter);
@@ -47,17 +46,13 @@ export default function Search() {
   ]);
 
   return (
-    <View className="flex flex-1 flex-col bg-black p-2">
-      <StatusBar style="light" backgroundColor="black" translucent={false} />
-
-      <Pressable className="mb-4" onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={30} color="#ffffff" />
-      </Pressable>
-
-      <View className="mb-4 flex flex-row items-center gap-1 rounded border border-gray-400 p-2">
+    <View style={{paddingBottom:tabBarHeight}} className="flex flex-1 flex-col bg-[#1A1A1A] p-4">
+      <View className="mb-4 flex flex-row items-center gap-1 rounded-3xl border border-gray-400 p-2">
         <AntDesign name="search1" color={"white"} size={20} />
         <TextInput
           className="ml-2 flex-1 text-white"
+          placeholder="Digite um filme ou uma série"
+          placeholderTextColor="gray"
           onChangeText={changeTextInput}
           value={busca}
         />

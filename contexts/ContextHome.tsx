@@ -1,5 +1,5 @@
 import { MovieSearchProps } from "@/interfaces/search-interface";
-import { initialRequest } from "@/services/searchContent";
+import { mergeNowPlaying, fetchIntercalatedCategory, initialRequestMovie, initialRequestTVShow } from "@/services/searchContent";
 import React, {
   createContext,
   useContext,
@@ -7,27 +7,71 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import { filters } from "@/interfaces/filters";
 
 interface ContextHomeType {
-  media: MovieSearchProps[][];
-  setMedia: React.Dispatch<React.SetStateAction<MovieSearchProps[][]>>;
+  fixedMedia: MovieSearchProps[][],
+  dynamicMedia: MovieSearchProps[][],
+  filtrar: (filtros: filters) => void,
+  loading: boolean
 }
 
 const ContextHome = createContext<ContextHomeType | undefined>(undefined);
 
 export const ProviderHome = ({ children }: { children: ReactNode }) => {
-  const [media, setMedia] = useState<MovieSearchProps[][]>([]);
+  const [filtersState, setFiltersState] = useState<filters>({
+    movie: [28],
+    tv: [10759]
+  });
+  const [loading, setLoading] = useState(true);
+
+  const filtrar = (filtros: filters) => {
+    setFiltersState(prev => {
+      const isEqual =
+        JSON.stringify(prev.movie) === JSON.stringify(filtros.movie) &&
+        JSON.stringify(prev.tv) === JSON.stringify(filtros.tv);
+      return isEqual ? prev : filtros;
+    });
+  };
+
+  const [fixedMedia, setFixedMedia] = useState<MovieSearchProps[][]>([]);
+  const [dynamicMedia, setDynamicMedia] = useState<MovieSearchProps[][]>([]);
+  
+  const [initialDataLoaded, setInitialDataLoaded] = useState(false);
+  const [dynamicDataLoaded, setDynamicDataLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const categories = await initialRequest();
-      setMedia(categories);
+    const fetchInitialData = async () => {
+      const np = await mergeNowPlaying();
+      const ea = await fetchIntercalatedCategory(0, 21);
+      setFixedMedia([np, ea]);
+      setInitialDataLoaded(true);
     };
-    fetchData();
+    fetchInitialData();
   }, []);
 
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      const fetchDynamicData = async () => {
+        const mv = await initialRequestMovie(filtersState.movie);
+        const tv = await initialRequestTVShow(filtersState.tv);
+        setDynamicMedia([mv, tv]);
+        setDynamicDataLoaded(true);
+      };
+      fetchDynamicData();
+    }, 500); 
+
+    return () => clearTimeout(debounceTimeout);
+  }, [filtersState]);
+
+  useEffect(() => {
+    if (initialDataLoaded && dynamicDataLoaded) {
+      setLoading(false);
+    }
+  }, [initialDataLoaded, dynamicDataLoaded]);
+
   return (
-    <ContextHome.Provider value={{ media, setMedia }}>
+    <ContextHome.Provider value={{ fixedMedia, dynamicMedia, loading, filtrar }}>
       {children}
     </ContextHome.Provider>
   );

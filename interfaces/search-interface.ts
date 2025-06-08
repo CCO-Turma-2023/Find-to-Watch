@@ -1,6 +1,7 @@
 export interface MovieSearchProps {
   id: string;
   title: string;
+  name: string;
   overview: string;
   poster_path: string;
   key: string | undefined

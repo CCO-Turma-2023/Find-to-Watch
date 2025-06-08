@@ -33,8 +33,8 @@ export function LocationProvider({ children }: { children: ReactNode }) {
       const newRegion = {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1,
       };
       setRegion(newRegion);
 

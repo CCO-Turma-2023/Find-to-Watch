@@ -19,6 +19,7 @@ interface ContextCinemaType {
   setCine: (c: TheaterInterface) => void;
   removeCine: (codigo: string) => void;
   getAllDataFromAsyncStorage: () => Promise<TheaterInterface[]>;
+  loading: boolean
 }
 
 const ContextCinema = createContext<ContextCinemaType | undefined>(undefined);
@@ -26,26 +27,24 @@ const ContextCinema = createContext<ContextCinemaType | undefined>(undefined);
 export const ProviderCinema = ({ children }: { children: ReactNode }) => {
   const [media, setMedia] = useState<MovieSearchProps[][]>([]);
   const [cinemas, setCinemas] = useState<TheaterInterface[]>([]);
-
+  const [loading, setLoading] = useState(true)
+  
   useEffect(() => {
     const fetchData = async () => {
       const categories = await initialRequestCinema();
       setMedia(categories);
+      setLoading(false)
     };
 
     fetchData();
   }, []);
 
   async function setCine(cinema: TheaterInterface) {
-    const exists = cinemas.find((c) => c.codigo === cinema.codigo);
-
-    if (!exists) {
       await AsyncStorage.setItem(
         cinema.codigo,
         JSON.stringify({ cinema: cinema.cinema, endereco: cinema.endereco }),
       );
       setCinemas((prev) => [...prev, cinema]);
-    }
   }
 
   async function removeCine(codigo: string) {
@@ -91,6 +90,7 @@ export const ProviderCinema = ({ children }: { children: ReactNode }) => {
         setCinemas,
         removeCine,
         getAllDataFromAsyncStorage,
+        loading
       }}
     >
       {children}

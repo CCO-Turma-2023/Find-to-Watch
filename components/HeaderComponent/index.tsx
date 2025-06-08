@@ -1,47 +1,21 @@
-import { View, Image } from "react-native";
+import { View, Text } from "react-native";
 import { Link } from "expo-router";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { LinearGradient } from "expo-linear-gradient";
-import logo from "@/assets/images/logo.png";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function Header() {
   return (
-    <LinearGradient
-      colors={["rgba(2, 77, 191, 1)", "rgba(1, 36, 89, 1)"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      className="w-full"
-    >
-      <View className="flex-row items-center justify-between">
-        <View className="flex items-center justify-center">
-          <Image
-            source={logo}
-            style={{
-              width: 82,  
-              height: 82,  
-            }}
-            resizeMode="contain"
-          />
-        </View>
+    <View className="flex-row bg-[#1A1A1A] items-center justify-between p-2 pb-3 px-4 border border-b-white">
+      <View style={{ width: 40 }} />
 
-        <View className="flex flex-row gap-3 p-2">
-          {/* Botão de busca */}
-          <Link href="/search" className="p-2">
-            <AntDesign name="search1" size={24} color="white" />
-          </Link>
-
-          {/* Avatar */}
-          <View className="h-12 w-12 overflow-hidden rounded-full bg-white items-center justify-center">
-            <Image
-              source={{uri: "https://i.redd.it/the-famous-wet-owl-also-known-as-lamont-appears-to-be-a-v0-0awtil7kynr81.jpg?width=750&format=pjpg&auto=webp&s=293b8103fdffd57e5ffa13c5a6f02795347061a8"}}
-              style={{
-                width: 50, 
-                height: 50,
-              }}
-            />
-        </View>
-        </View>
+      
+      <View className="flex-1 items-center">
+        <Text className="text-white font-bold text-xl">FIND TO WATCH</Text>
       </View>
-    </LinearGradient>
+
+      
+      <View className="rounded-full bg-[#262626] border border-[rgba(255,255,255,0.8)] mr-2">
+          <Ionicons className="p-2" name="notifications" size={24} color="white" />
+      </View>
+    </View>
   );
 }

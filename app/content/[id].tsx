@@ -8,6 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import { useContextCinema } from "@/contexts/ContextCinema";
 import { getProviderLink } from "@/services/scrap"
+import Loading from "@/components/loading";
 
 export default function Filmes() {
 
@@ -17,6 +18,7 @@ export default function Filmes() {
   const [watchProviders, setWatchProviders] = useState<contentProvider[] | undefined>(undefined);
   const [providerLinks, setproviderLinks] = useState<providerLink[] | undefined>(undefined);
   const { media } = useContextCinema();
+  const [loading, setLoading] = useState(true)
 
   const OnPress = async () => {
     const result = await getFilmId(currentMovie!.title);
@@ -57,10 +59,17 @@ export default function Filmes() {
       }
 
       setCurrentMovie(foundMovie);
+      
+      let contentProviders: contentProvider[] | undefined;
 
-      const contentProviders = await requestWatchProvides(id);
+      try {
+        contentProviders = await requestWatchProvides(id);
+      } catch (err) {
+        contentProviders = undefined;
+      }
 
       if (!contentProviders) {
+        setLoading(false)
         return;
       }
 
@@ -68,14 +77,14 @@ export default function Filmes() {
         new Map<string, contentProvider>(contentProviders.map((p: contentProvider) => [p.provider_name, p])).values()
       );
 
-      if (contentProviders) {
-        setWatchProviders(uniqueContentProviders)
+      setWatchProviders(uniqueContentProviders)
+        
+      const links = await getProviderLink(id)
+        
+      setproviderLinks(links)
 
-        const links = await getProviderLink(id)
-
-        setproviderLinks(links)
-      }
-
+      setLoading(false)
+      
     };
 
     findContent();
@@ -105,7 +114,8 @@ export default function Filmes() {
   const year = currentMovie?.release_date ? new Date(currentMovie.release_date).getFullYear() : undefined;
 
   return (
-    <ScrollView className="flex-1 gap-3 bg-black p-2" showsVerticalScrollIndicator={false}>
+    loading || !currentMovie ? <Loading /> : 
+      <ScrollView className="flex-1 gap-3 bg-black p-2" showsVerticalScrollIndicator={false}>
       <View className="flex-1 gap-3 bg-black p-2">
 
         <StatusBar style="light" backgroundColor="black" translucent={false} />
@@ -113,8 +123,8 @@ export default function Filmes() {
         <Pressable onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={30} color="#ffffff" />
         </Pressable>
-
-        <Image
+          <View>
+            <Image
           source={{
             uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
           }}
@@ -124,7 +134,6 @@ export default function Filmes() {
           }}
           resizeMode="contain"
         />
-
 
         {media && media.length > 0 && (
           <View className="flex flex-col gap-4">
@@ -173,6 +182,9 @@ export default function Filmes() {
             )}
           </View>
         )}
+          </View>
+        
+
       </View>
     </ScrollView>
   );
