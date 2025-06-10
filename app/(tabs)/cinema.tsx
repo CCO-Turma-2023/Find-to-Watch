@@ -32,14 +32,16 @@ export default function Filmes() {
     getAll();
   }, []);
 
-  if(!loading){Trailers = [...media[0], ...media[1], ...media[2]]}
+  if(!loading){ 
+    Trailers = [...media[0].media.flat(), ...media[1].media.flat(), ...media[2].media.flat()]
+  }
 
   return (
     <>
       <Header />
       <View className="flex-1 bg-[#1A1A1A] p-2" >
         {loading ? <Loading /> : 
-          <ShowSections sections={categorias} media={media} hasFilters={false} Header={<AddCinema cinemas={cinemas} removeCine={removeCine} />} Trailers={Trailers}/>
+          <ShowSections sections={categorias} media={media.flat()} Header={<AddCinema cinemas={cinemas} removeCine={removeCine} />} Trailers={Trailers}/>
         }
       </View>
     </>

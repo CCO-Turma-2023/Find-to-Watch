@@ -3,7 +3,7 @@ import {
   MovieSearchProps,
   contentProvider,
 } from "@/interfaces/search-interface";
-import axios from "axios";
+import axios, { all } from "axios";
 import React from "react";
 
 const getOverviewDifference = (original: any[], translated: any[]) => {
@@ -97,29 +97,15 @@ const fetchMediaWithFilter = async (
 const fetchCategory = async (
   mediaType: "movie" | "tv",
   genreId: number,
-  maxLength: number,
+  page:number
 ): Promise<MovieSearchProps[]> => {
   let url = genreId
-    ? `3/discover/${mediaType}?language=pt-BR&region=BR&page=1&sort_by=vote_count.desc&with_genres=${genreId}`
-    : `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=1`;
-
-  let resp = []
+    ? `3/discover/${mediaType}?include_adult=false&include_null_first_air_dates=false&language=pt-BR&page=${page}&sort_by=vote_count.desc&with_genres=${genreId}`
+    : `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=${page}`;
 
   let res = await api.get(url, options);
 
-  resp.push(res.data.results)
-
-  if(resp.length < maxLength){
-    url = genreId
-    ? `3/discover/${mediaType}?language=pt-BR&region=BR&page=2&sort_by=vote_count.desc&with_genres=${genreId}`
-    : `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=2`;
-
-    res = await api.get(url, options);
-
-    resp.push(res.data.results)
-  }
-
-  const filteredOverview = resp.flat().filter(
+  const filteredOverview = res.data.results.flat().filter(
     (item: any) => item.overview?.trim() !== "",
   );
 
@@ -143,23 +129,27 @@ const fetchCategory = async (
     }
   }
 
-  return filteredWithProviders.slice(0, maxLength);
+  return filteredWithProviders
 };
 
 
 export const fetchIntercalatedCategory = async (
   genreId: number,
-  maxLength: number,
+  page: number,
 ) => {
-  const movie = await fetchCategory("movie", genreId, maxLength);
-  const tv = await fetchCategory("tv", genreId, maxLength);
+  const movie = await fetchCategory("movie", genreId, page);
+  const tv = await fetchCategory("tv", genreId, page);
   const result: MovieSearchProps[] = [];
+
+  const maxLength = Math.max(movie.length, tv.length);
+
   for (let i = 0; i < maxLength; i++) {
     if (movie[i]) result.push(movie[i]);
     if (tv[i]) result.push(tv[i]);
   }
+
   return result;
-};
+}
 
 export const requestContents = async (
   mediaSearch: string,
@@ -220,14 +210,15 @@ export const requestContents = async (
 };
 
 export const initialRequestMovie = async (
-  filters: number[]
+  filters: {
+    titulo: string;
+    index: number;
+    id: number;
+    page: number;
+  },
 ): Promise<MovieSearchProps[]> => {
   try {
-    const maxLength = 21;
-
-    const results = await Promise.all(
-      filters.map((id) => fetchCategory("movie", id, maxLength))
-    );
+    const results = await fetchCategory("movie", filters.id, filters.page)
 
     const allResults = results.flat();
 
@@ -244,14 +235,16 @@ export const initialRequestMovie = async (
 };
 
 export const initialRequestTVShow = async (
-  filters: number[]
+  filters: {
+    titulo: string;
+    index: number;
+    id: number;
+    page: number;
+  },
 ): Promise<MovieSearchProps[]> => {
   try {
-    const maxLength = 21;
 
-    const results = await Promise.all(
-      filters.map((id) => fetchCategory("tv", id, maxLength))
-    );
+    const results = await fetchCategory("tv", filters.id, filters.page)
 
     // Achata o array e remove duplicatas por `id`
     const allResults = results.flat();

@@ -55,7 +55,7 @@ export default function Theater() {
       const geocodedLocations = await Location.geocodeAsync(busca.trim());
       if (geocodedLocations.length > 0) {
         const { latitude, longitude } = geocodedLocations[0];
-        setCity ({ latitude, longitude, latitudeDelta:0.1, longitudeDelta:0.1 })
+        setCity ({ latitude, longitude, latitudeDelta:0.15, longitudeDelta:0.15 })
       }
 
       const coordinates = await Promise.all(

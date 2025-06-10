@@ -1,25 +1,32 @@
-import { View, Image, FlatList, Dimensions } from "react-native";
+import { View, Image, FlatList, Dimensions, Text } from "react-native";
 import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import YoutubePlayer from "react-native-youtube-iframe";
+import { useRef } from "react";
 
 interface ShowMediaProps {
   medias: MovieSearchProps[];
   horizontal?: boolean;
-  Trailers?: any
+  Trailers?: any,
+  incPage?: boolean,
+  funcIncPage?: (index: number, type: "movie" | "tv") => void
+  index1?: number
+  index2?: number
 }
 
 const numColumns = 2;
 const screenWidth = Dimensions.get("window").width;
 const itemWidth = screenWidth / numColumns - 8; 
 
-export default function ShowMedia({ medias, horizontal, Trailers }: ShowMediaProps) {
+export default function ShowMedia({ medias, horizontal, Trailers, incPage = false, funcIncPage, index1, index2 }: ShowMediaProps) {
+  
   return Trailers ? (
     <FlatList
       data={Trailers}
-      keyExtractor={(item, index) => `${item.id}-${index}`}
+      keyExtractor={(item) => item.id.toString()}
       numColumns={horizontal ? 1 : numColumns}
       horizontal={horizontal}
+      onEndReachedThreshold={1}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8 }}
@@ -41,6 +48,16 @@ export default function ShowMedia({ medias, horizontal, Trailers }: ShowMediaPro
       keyExtractor={(item, index) => `${item.id}-${index}`}
       numColumns={horizontal ? 1 : numColumns}
       horizontal={horizontal}
+      onEndReached={()=> {
+        if(incPage){
+          if(index1 === 2){
+            funcIncPage!(index2!, "movie")
+          }else{
+            funcIncPage!(index2!, "tv")
+          }
+        }
+      }}
+      onEndReachedThreshold={4}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8 }}

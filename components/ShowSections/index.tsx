@@ -3,128 +3,74 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { FlatList, View, Text, Pressable } from "react-native";
 import ShowMedia from "../AllShowMedia";
 import React, { useEffect, useState } from "react";
-import {filters} from "@/interfaces/filters"
+import {Filtro} from "@/interfaces/filters"
 
-interface Props{
-    sections: {titulo: string, index: number, icon?:any}[],
-    media: MovieSearchProps[][],
-    hasFilters:boolean
-    func?: (filtros: filters) => void
-    Header?: React.JSX.Element
-    Trailers?: any
+
+interface Props {
+  sections: { titulo: string; index: number; icon?: any, id?: number, page?: number}[];
+  media: {media: MovieSearchProps[][], hasSubSections: boolean, subSections?:any}[];
+  Header?: React.JSX.Element;
+  Trailers?: any;
+  incPage?:boolean
+  funcIncPage?: (index:number, type: "movie" | "tv") => void
+  index1?:number
 }
 
-const movies = [
-    {filter: "Ação", id: 28},
-    {filter: "Drama", id: 18},
-    {filter: "Comédia", id: 35},
-    {filter: "Animação", id: 16},
-    {filter: "Documentário", id: 99},
-    {filter: "Terror", id: 27},
-    {filter: "Romance", id: 10749},
-    {filter: "Sci-Fi", id: 878},
-    {filter: "Musical", id: 10402},
-    {filter: "História", id: 36},
-    {filter: "Suspense", id: 53},
-]
 
-const series = [
-    {filter: "Ação e Aventura", id: 10759},
-    {filter: "Drama", id: 18},
-    {filter: "Comédia", id: 35},
-    {filter: "Animação", id: 16},
-    {filter: "Documentário", id: 99},
-    {filter: "Infantil", id: 10762},
-    {filter: "Romance", id: 10749},
-    {filter: "Fantasia", id: 10765},
-    {filter: "Reality Show", id: 10764},
-    {filter: "História", id: 36},
-    {filter: "Mistério", id: 9648},
-]
-
-
-export default function ShowSections({sections, media, Header, func, hasFilters, Trailers } : Props){
+export default function ShowSections({sections, media, Header, incPage = false, funcIncPage, Trailers, index1 } : Props){
     
-    const [selectFilterMovie, setSelectFilterMovie] = useState<number[]>([28]);
-    const [selectFilterTv, setSelectFilterTv] = useState<number[]>([10759]);
-
-    useEffect(() => {
-        if (hasFilters && func) {
-            const filters = { movie: selectFilterMovie, tv: selectFilterTv };
-            func(filters);
-        }
-    }, [selectFilterMovie, selectFilterTv, hasFilters, func]);
-
     return(
         <FlatList
-            ListHeaderComponent={Header}
-            data={sections}
-            keyExtractor={(item) => item.titulo}
-            contentContainerStyle={{ paddingBottom: 32 }}
-            showsVerticalScrollIndicator={false}
-            className="bg-[#1A1A1A] py-2"
-            renderItem={({ item }) => {
-              const categoriaFilmes: MovieSearchProps[] = media[item.index] || [];
-      
-              return (
-                <View className="mb-8">
-                  <View className="flex flex-row gap-1">
-                    {item.icon && <MaterialIcons
-                          name={item.icon}
-                          size={25}
-                          style={{marginLeft:8}}
-                          color="red"
-                        />}
-                    <Text className="pl-2 text-lg font-semibold text-white">
-                      {item.titulo}
-                    </Text>
-                  </View>
-                  { hasFilters && (
-                    <View className="flex flex-row gap-3 flex-wrap px-4 py-2">
-                      {item.titulo === "Filmes" ? 
-                          movies.map((filtro) => {
-                              const isSelected = selectFilterMovie.includes(filtro.id);
-                              return(
-                                  <Pressable
-                                      key={filtro.id}
-                                      className={`border ${isSelected ? "border-red-500" : "border-white"} rounded-3xl px-4 py-2 bg-[#2B2B2B]`}
-                                      onPress={() => setSelectFilterMovie(
-                                          (prev) =>
-                                          prev.includes(filtro.id)
-                                              ? prev.filter((id) => id !== filtro.id)
-                                              : [...prev, filtro.id],
-                                      )}
-                                  >
-                                      <Text className="text-white">{filtro.filter}</Text>
-                                  </Pressable>
-                              )
-                          })
-                          : item.titulo === "Séries" ?
-                              series.map((filtro) => {
-                                  const isSelected = selectFilterTv.includes(filtro.id);
-                                  return(
-                                      <Pressable
-                                          key={filtro.id}
-                                          className={`border ${isSelected ? "border-red-500" : "border-white"} rounded-3xl px-4 py-2 bg-[#2B2B2B]`}
-                                          onPress={() => setSelectFilterTv(
-                                              (prev) =>
-                                              prev.includes(filtro.id)
-                                                  ? prev.filter((id) => id !== filtro.id)
-                                                  : [...prev, filtro.id],
-                                          )}
-                                      >
-                                          <Text className="text-white">{filtro.filter}</Text>
-                                      </Pressable>
-                                  )
-                              }) : 
-                          null
-                       }
-                    </View>
-                  )}
-                  {item.titulo === "Trailers" ? <ShowMedia medias={categoriaFilmes} horizontal={true} Trailers={Trailers}/> : (item.titulo === "Filmes" && selectFilterMovie.length !== 0) || (item.titulo === "Séries" && selectFilterTv.length !== 0) || categoriaFilmes.length !== 0 ? <ShowMedia medias={categoriaFilmes} horizontal={true}/> : <Text className="text-white text-xl w-full text-center p-4">Sem filtros selecionados</Text> }
-                </View>
-              );
-            }}
-        />
+        ListHeaderComponent={Header}
+        data={sections}
+        keyExtractor={(item) => item.index.toString()}
+        contentContainerStyle={{ paddingBottom: 56 }}
+        showsVerticalScrollIndicator={false}
+        style={{ backgroundColor: '#1A1A1A', paddingVertical: 8 }}
+        renderItem={({ item }) => {
+          const currentMedia = media[item.index];
+          if (!currentMedia) return null;
+
+          let categoria: MovieSearchProps[] = [];
+          let categorias: { media: MovieSearchProps[][]; hasSubSections: boolean; subSections?: any }[] = [];
+
+          if (!currentMedia.hasSubSections) {
+            categoria = currentMedia.media.flat();
+          } else {
+            categorias = currentMedia.media.map((m) => ({
+              media: [m],
+              hasSubSections: false,
+            }));
+          }
+
+          return (
+            <View style={{ marginBottom: 12 }}>
+              <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+                {item.icon && (
+                  <MaterialIcons
+                    name={item.icon}
+                    size={25}
+                    style={{ marginLeft: 8 }}
+                    color="red"
+                  />
+                )}
+                <Text style={{ paddingLeft: 8, fontSize: 18, fontWeight: '600', color: 'white' }}>
+                  {item.titulo}
+                </Text>
+              </View>
+              {!currentMedia.hasSubSections ? (
+                item.titulo === 'Trailers' ? (
+                  <ShowMedia medias={categoria} horizontal={true} Trailers={Trailers}  />
+                ) : index1 ? (
+                  <ShowMedia medias={categoria} horizontal={true} incPage={incPage} funcIncPage={funcIncPage} index1={index1} index2={item.index}/>
+                ) : 
+                <ShowMedia medias={categoria} horizontal={true}/>
+              ) : (
+                <ShowSections media={categorias} incPage={true} funcIncPage={funcIncPage} index1={item.index} sections={currentMedia.subSections} />
+              )}
+            </View>
+          );
+        }}
+      />
     )
 }

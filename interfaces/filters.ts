@@ -1,4 +1,6 @@
+export interface Filtro{ id: number; page: number };
+
 export interface filters{
-  movie:number[],
-  tv:number[]
+  movie:Filtro[],
+  tv:Filtro[]
 }

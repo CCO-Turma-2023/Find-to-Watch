@@ -17,7 +17,7 @@ export default function Filmes() {
   const [nowPlaying, setNowPlaying] = useState(false);
   const [watchProviders, setWatchProviders] = useState<contentProvider[] | undefined>(undefined);
   const [providerLinks, setproviderLinks] = useState<providerLink[] | undefined>(undefined);
-  const { media } = useContextCinema();
+  const {media} = useContextCinema();
   const [loading, setLoading] = useState(true)
 
   const OnPress = async () => {
@@ -29,17 +29,24 @@ export default function Filmes() {
     const findContent = async () => {
       let foundMovie = null;
 
-      if (media && media[0]?.length > 0 && media[1]?.length > 0) {
-        for (let i in media[0]) {
-          if (id.slice(0, -1) == media[0][i].id) {
-            foundMovie = media[0][i];
+      if (
+        media &&
+        media[0].media[0]?.length > 0 &&
+        media[1].media[0]?.length > 0
+      ) {
+        // Verifica no media[0]
+        for (let item of media[0].media[0]) {
+          if (String(item.id) === id.slice(0, -1)) {
+            foundMovie = item;
             setNowPlaying(true);
             break;
           }
         }
-        for (let i in media[1]) {
-          if (id.slice(0, -1) == media[1][i].id) {
-            foundMovie = media[1][i];
+
+        // Verifica no media[1]
+        for (let item of media[1].media[0]) {
+          if (String(item.id) === id.slice(0, -1)) {
+            foundMovie = item;
             setNowPlaying(true);
             break;
           }

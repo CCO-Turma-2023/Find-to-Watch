@@ -142,7 +142,7 @@ export async function getTheaters (idMovie : string | string[], idCity : string 
       return `${newHour}:${newMinute}`;
     };
 
-    if (Array.isArray(cinemas)) {
+    /*if (Array.isArray(cinemas)) {
       cinemas.forEach((item: any) => {
         if (Array.isArray(item.dublados)) {
           item.dublados = item.dublados.map((hora: string) => addHours(hora, 3));
@@ -151,7 +151,7 @@ export async function getTheaters (idMovie : string | string[], idCity : string 
           item.legendados = item.legendados.map((hora: string) => addHours(hora, 3));
         }
       });
-    }
+    }*/
 
     return cinemas;
 

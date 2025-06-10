@@ -12,8 +12,8 @@ import React, {
 } from "react";
 
 interface ContextCinemaType {
-  media: MovieSearchProps[][];
-  setMedia: React.Dispatch<React.SetStateAction<MovieSearchProps[][]>>;
+  media: {media: MovieSearchProps[][], hasSubSections: boolean}[];
+  setMedia: React.Dispatch<React.SetStateAction<{media: MovieSearchProps[][], hasSubSections: boolean}[]>>;
   cinemas: TheaterInterface[];
   setCinemas: React.Dispatch<React.SetStateAction<TheaterInterface[]>>;
   setCine: (c: TheaterInterface) => void;
@@ -25,14 +25,19 @@ interface ContextCinemaType {
 const ContextCinema = createContext<ContextCinemaType | undefined>(undefined);
 
 export const ProviderCinema = ({ children }: { children: ReactNode }) => {
-  const [media, setMedia] = useState<MovieSearchProps[][]>([]);
+  const [media, setMedia] = useState<{media: MovieSearchProps[][], hasSubSections: boolean}[]>([]);
   const [cinemas, setCinemas] = useState<TheaterInterface[]>([]);
   const [loading, setLoading] = useState(true)
   
   useEffect(() => {
     const fetchData = async () => {
       const categories = await initialRequestCinema();
-      setMedia(categories);
+      setMedia([
+        {media: [categories[0]], hasSubSections: false}, 
+        {media: [categories[1]], hasSubSections: false},
+        {media: [categories[2]], hasSubSections: false},
+        {media: [categories[3]], hasSubSections: false},
+      ]);
       setLoading(false)
     };
 
