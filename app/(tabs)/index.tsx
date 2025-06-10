@@ -1,10 +1,9 @@
 import { useContextHome } from "@/contexts/ContextHome";
-import { FlatList, ScrollView, View } from "react-native";
+import { View } from "react-native";
 import Loading from "@/components/loading"
 import PosterCarousel from "@/components/PosterCarousel"
 import ShowSections from "@/components/ShowSections";
 import Header from "@/components/HeaderComponent";
-import { MovieSearchProps } from "@/interfaces/search-interface";
 
 const categorias = [
   { titulo: "Em Cartaz nos Cinemas", index: 0, icon: "theaters" },

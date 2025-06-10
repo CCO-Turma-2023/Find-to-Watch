@@ -1,5 +1,5 @@
-import { View, Text, Dimensions} from "react-native";
-import Animated,{Extrapolation, interpolate, SharedValue, useAnimatedStyle, } from "react-native-reanimated"
+import { View} from "react-native";
+import Animated,{SharedValue } from "react-native-reanimated"
 
 interface Props{
     items:{ image: string, id:string, title?: string, name?: string }[],

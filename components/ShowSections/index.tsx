@@ -2,8 +2,8 @@ import { MovieSearchProps } from "@/interfaces/search-interface";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { FlatList, View, Text, Pressable } from "react-native";
 import ShowMedia from "../AllShowMedia";
-import React, { useEffect, useState } from "react";
-import {Filtro} from "@/interfaces/filters"
+import React from "react";
+
 
 
 interface Props {

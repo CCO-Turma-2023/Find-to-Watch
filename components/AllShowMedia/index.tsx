@@ -2,7 +2,6 @@ import { View, Image, FlatList, Dimensions, Text } from "react-native";
 import { Link } from "expo-router";
 import { MovieSearchProps } from "@/interfaces/search-interface";
 import YoutubePlayer from "react-native-youtube-iframe";
-import { useRef } from "react";
 
 interface ShowMediaProps {
   medias: MovieSearchProps[];

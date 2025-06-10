@@ -38,7 +38,7 @@ export default function PosterCarousel({ posters }: any) {
   useEffect(() => {
     if (isAutoPlay) {
       interval.current = setInterval(() => {
-        offset.value = offset.value + ITEM_WIDTH;
+        offset.value += ITEM_WIDTH;
       }, 5000);
     } else {
       clearInterval(interval.current);
@@ -47,10 +47,12 @@ export default function PosterCarousel({ posters }: any) {
     return () => {
       clearInterval(interval.current);
     };
-  }, [isAutoPlay, offset]);
+  }, [isAutoPlay]);
 
   useDerivedValue(() => {
-    scrollTo(ref, offset.value, 0, true);
+    if (ref) {
+      scrollTo(ref, offset.value, 0, true);
+    }
   });
 
   const handleScrollEnd = (event: any) => {

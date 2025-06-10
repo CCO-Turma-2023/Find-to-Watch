@@ -8,8 +8,6 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { filters, Filtro } from "@/interfaces/filters";
-
 
 interface ContextHomeType {
   Media: {id: number, media: MovieSearchProps[][], hasSubSections: boolean, subSections?:any}[],
@@ -50,11 +48,11 @@ const series = [
     {titulo: "Animação", index: 3, id: 16, page: 1},
     {titulo: "Documentário", index: 4,  id: 99, page: 1},
     {titulo: "Infantil", index: 5,  id: 10762, page: 1},
-    {titulo: "Mistério", index: 10, id: 9648, page: 1},
+    {titulo: "Mistério", index: 6, id: 9648, page: 1},
     {titulo: "Fantasia", index: 7,  id: 10765, page: 1},
     {titulo: "Reality Show", index: 8,  id: 10764, page: 1},
-    {titulo: "Romance", index: 6,  id: 10749, page: 1},
-    {titulo: "História", index: 9, id: 36, page: 1}, 
+    {titulo: "Romance", index: 9,  id: 10749, page: 1},
+    {titulo: "História", index: 10, id: 36, page: 1}, 
 ]
 
 const ContextHome = createContext<ContextHomeType | undefined>(undefined);

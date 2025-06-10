@@ -44,10 +44,6 @@ export default function CustomTabBarButton({ children, onPress }: any) {
                 backgroundColor: "red",
                 justifyContent: "center",
                 alignItems: "center",
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 10 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.5,
                 elevation: 5,
               }}
             >

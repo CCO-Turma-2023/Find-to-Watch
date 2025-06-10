@@ -1,5 +1,5 @@
 import { Link } from "expo-router"
-import { View, Text, Image, Dimensions} from "react-native"
+import { Image} from "react-native"
 import Animated,{Extrapolation, interpolate, SharedValue, useAnimatedStyle, } from "react-native-reanimated"
 
 interface Props{

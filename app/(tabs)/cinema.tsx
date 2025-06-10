@@ -1,10 +1,6 @@
-import { Text, View, FlatList, Image, ScrollView } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
-import { Link } from "expo-router";
+import {  View} from "react-native";
 import { useContextCinema } from "@/contexts/ContextCinema";
 import { useEffect } from "react";
-import { TheaterInterface } from "@/interfaces/theater-interface";
-import { TouchableOpacity } from "react-native";
 import Loading from "@/components/loading"
 import Header from "@/components/HeaderComponent";
 import ShowSections from "@/components/ShowSections";
