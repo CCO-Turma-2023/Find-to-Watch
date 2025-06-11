@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import "../global.css";
 import { ProviderHome } from "@/contexts/ContextHome";
 import { ProviderCinema } from "@/contexts/ContextCinema";
-
+import 'react-native-reanimated';
 import { LocationProvider } from "@/contexts/ContextLocation";
 
 export default function RootLayout() {
