@@ -28,31 +28,29 @@ interface ContextHomeType {
 }
 
 const movies = [
-    {titulo: "Ação", index: 0, id: 28, page: 1},
-    {titulo: "Drama", index: 1, id: 18, page: 1},
-    {titulo: "Comédia", index: 2, id: 35, page: 1},
-    {titulo: "Animação", index: 3, id: 16, page: 1},
-    {titulo: "Documentário", index: 4, id: 99, page: 1},
-    {titulo: "Terror", index: 5, id: 27, page: 1},
-    {titulo: "Romance", index: 6,  id: 10749, page: 1},
-    {titulo: "Sci-Fi", index: 7,  id: 878, page: 1},
-    {titulo: "Musical", index: 8,  id: 10402, page: 1},
-    {titulo: "História", index: 9, id: 36, page: 1},
-    {titulo: "Suspense", index: 10, id: 53, page: 1},
+    {titulo: "Ação", index: 0, id: 28, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Drama", index: 1, id: 18, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Comédia", index: 2, id: 35, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Animação", index: 3, id: 16, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Documentário", index: 4, id: 99, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Terror", index: 5, id: 27, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Romance", index: 6,  id: 10749, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Sci-Fi", index: 7,  id: 878, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Musical", index: 8,  id: 10402, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "História", index: 9, id: 36, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Suspense", index: 10, id: 53, page: Math.floor(Math.random() * 10) + 1},
 ]
 
 const series = [
-    {titulo: "Ação e Aventura", index: 0, id: 10759, page: 1},
-    {titulo: "Drama", index: 1, id: 18, page: 1},
-    {titulo: "Comédia", index: 2, id: 35, page: 1},
-    {titulo: "Animação", index: 3, id: 16, page: 1},
-    {titulo: "Documentário", index: 4,  id: 99, page: 1},
-    {titulo: "Infantil", index: 5,  id: 10762, page: 1},
-    {titulo: "Mistério", index: 6, id: 9648, page: 1},
-    {titulo: "Fantasia", index: 7,  id: 10765, page: 1},
-    {titulo: "Reality Show", index: 8,  id: 10764, page: 1},
-    {titulo: "Romance", index: 9,  id: 10749, page: 1},
-    {titulo: "História", index: 10, id: 36, page: 1}, 
+    {titulo: "Ação e Aventura", index: 0, id: 10759, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Drama", index: 1, id: 18, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Comédia", index: 2, id: 35, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Animação", index: 3, id: 16, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Documentário", index: 4,  id: 99, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Infantil", index: 5,  id: 10762, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Mistério", index: 6, id: 9648, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Fantasia", index: 7,  id: 10765, page: Math.floor(Math.random() * 10) + 1},
+    {titulo: "Reality Show", index: 8,  id: 10764, page: Math.floor(Math.random() * 10) + 1},
 ]
 
 const ContextHome = createContext<ContextHomeType | undefined>(undefined);
@@ -97,7 +95,7 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
         const updatedFilmesFilter = prevFilmesFilter.map(item => {
           if (item.index === index) {
             
-            return { ...item, page: item.page + 1 };
+            return { ...item, page: Math.floor(Math.random() * 10) + 1 };
           }
           
           return item;
@@ -111,7 +109,7 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
         const updatedSeriesFilter = prevSeriesFilter.map(item => {
           if (item.index === index) {
             
-            return { ...item, page: item.page + 1 };
+            return { ...item, page: Math.floor(Math.random() * 10) + 1 };
           }
           
           return item;

@@ -227,6 +227,7 @@ export const requestContents = async (
   }
 };
 
+const usedPagesMap: Record<number, Set<number>> = {};
 
 export const initialRequestMovie = async (
   filters: {
@@ -237,9 +238,33 @@ export const initialRequestMovie = async (
   },
 ): Promise<MovieSearchProps[]> => {
   try {
-    const results = await fetchCategory("movie", filters.id, filters.page)
+    const genreId = filters.id;
 
-    const allResults = results.flat();
+    // Inicializa se for a primeira vez
+    if (!usedPagesMap[genreId]) {
+      usedPagesMap[genreId] = new Set();
+    }
+
+    let page = filters.page;
+    const maxPage = 10;
+
+    // Tenta encontrar uma página ainda não usada
+    while (usedPagesMap[genreId].has(page) && page <= maxPage) {
+      page++;
+    }
+
+    // Se ultrapassou o limite, pode retornar vazio ou tentar reiniciar com outra lógica
+    if (page > maxPage) {
+      console.warn("Todas as páginas possíveis foram usadas para o gênero:", genreId);
+      return [];
+    }
+
+    // Marca a página como usada
+    usedPagesMap[genreId].add(page);
+
+    // Faz a requisição com a nova página
+    const result = await fetchCategory("movie", genreId, page);
+    const allResults = result.flat();
 
     const uniqueResults = allResults.filter(
       (item, index, self) =>
@@ -253,6 +278,9 @@ export const initialRequestMovie = async (
   }
 };
 
+// Armazena páginas usadas por gênero de séries
+const usedPagesMapTV: Record<number, Set<number>> = {};
+
 export const initialRequestTVShow = async (
   filters: {
     titulo: string;
@@ -262,11 +290,35 @@ export const initialRequestTVShow = async (
   },
 ): Promise<MovieSearchProps[]> => {
   try {
+    const genreId = filters.id;
 
-    const results = await fetchCategory("tv", filters.id, filters.page)
+    // Inicializa a estrutura para o gênero, se ainda não existir
+    if (!usedPagesMapTV[genreId]) {
+      usedPagesMapTV[genreId] = new Set();
+    }
+
+    let page = filters.page;
+    const maxPage = 10;
+
+    // Evita páginas já usadas, incrementando até encontrar uma livre
+    while (usedPagesMapTV[genreId].has(page) && page <= maxPage) {
+      page++;
+    }
+
+    // Se ultrapassar o máximo, encerra
+    if (page > maxPage) {
+      console.warn("Todas as páginas possíveis foram usadas para o gênero de série:", genreId);
+      return [];
+    }
+
+    // Marca a página como usada
+    usedPagesMapTV[genreId].add(page);
+
+    // Faz a requisição com a página válida
+    const fetched = await fetchCategory("tv", genreId, page);
 
     // Achata o array e remove duplicatas por `id`
-    const allResults = results.flat();
+    const allResults = fetched.flat();
 
     const uniqueResults = allResults.filter(
       (item, index, self) =>
@@ -279,6 +331,7 @@ export const initialRequestTVShow = async (
     return [];
   }
 };
+
 
 
 export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {
