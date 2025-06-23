@@ -102,39 +102,46 @@ const fetchMediaWithFilter = async (
 const fetchCategory = async (
   mediaType: "movie" | "tv",
   genreId: number,
-  page:number
+  page: number
 ): Promise<MovieSearchProps[]> => {
+  const isMovie = mediaType === "movie";
+  
+  const flexibleGenres = [99, 27, 10402, 10764, 10762]; // Documentário, Terror, Musical, Reality Show (Série), Infantil (Série)
+
+  const isFlexibleGenre = flexibleGenres.includes(genreId);
+  const minVotes = isFlexibleGenre ? 50 : 500;
+  const minRating = isFlexibleGenre ? 6.0 : 7.0;
+  const dateField = isFlexibleGenre ? "1990-01-01" : "2005-01-01";
+
+
   let url = genreId
-    ? `3/discover/${mediaType}?include_adult=false&include_null_first_air_dates=false&language=pt-BR&page=${page}&sort_by=vote_count.desc&with_genres=${genreId}`
+    ? `3/discover/${mediaType}?include_adult=false&include_null_first_air_dates=false&language=pt-BR&page=${page}` +
+      `&sort_by=vote_count.desc&with_genres=${genreId}&vote_count.gte=${minVotes}&vote_average.gte=${minRating}` +
+      `&${dateField}=2005-01-01&with_original_language=en`
     : `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=${page}`;
 
   let res = await api.get(url, options);
 
   const filteredOverview = res.data.results.flat().filter(
-    (item: any) => item.overview?.trim() !== "",
+    (item: any) => item.overview?.trim() !== ""
   );
 
   let filteredWithProviders = [];
 
-  if (mediaType === "movie") {
-    for (const item of filteredOverview) {
-      const providers = await requestWatchProvides(item.id + '1');
-      if (providers !== undefined) {
-        filteredWithProviders.push(item);
-      }
-    }
-    const filteredMovies = await filterOutNowPlaying(filteredWithProviders);
-    return filteredMovies;
-  }
-
   for (const item of filteredOverview) {
-    const providers = await requestWatchProvides(item.id + '0');
+    const suffix = isMovie ? "1" : "0";
+    const providers = await requestWatchProvides(item.id + suffix);
     if (providers !== undefined) {
       filteredWithProviders.push(item);
     }
   }
 
-  return filteredWithProviders
+  if (isMovie) {
+    const filteredMovies = await filterOutNowPlaying(filteredWithProviders);
+    return filteredMovies;
+  }
+
+  return filteredWithProviders;
 };
 
 
@@ -240,38 +247,58 @@ export const initialRequestMovie = async (
   try {
     const genreId = filters.id;
 
-    // Inicializa se for a primeira vez
     if (!usedPagesMap[genreId]) {
       usedPagesMap[genreId] = new Set();
     }
 
-    let page = filters.page;
-    const maxPage = 10;
+    const maxPage = 100;
 
-    // Tenta encontrar uma página ainda não usada
-    while (usedPagesMap[genreId].has(page) && page <= maxPage) {
-      page++;
-    }
+    // Tenta primeiro com a página original
+    const firstPage = filters.page;
+    usedPagesMap[genreId].add(firstPage);
 
-    // Se ultrapassou o limite, pode retornar vazio ou tentar reiniciar com outra lógica
-    if (page > maxPage) {
-      console.warn("Todas as páginas possíveis foram usadas para o gênero:", genreId);
-      return [];
-    }
-
-    // Marca a página como usada
-    usedPagesMap[genreId].add(page);
-
-    // Faz a requisição com a nova página
-    const result = await fetchCategory("movie", genreId, page);
-    const allResults = result.flat();
-
-    const uniqueResults = allResults.filter(
+    let fetched = await fetchCategory("movie", genreId, firstPage);
+    let allResults = fetched.flat();
+    let uniqueResults = allResults.filter(
       (item, index, self) =>
         index === self.findIndex((t) => t.id === item.id)
     );
 
-    return uniqueResults;
+    if (uniqueResults.length > 0) {
+      return uniqueResults;
+    }
+
+    // Se vazio, começa a tentar páginas aleatórias
+    let attempts = 0;
+    const maxAttempts = maxPage;
+
+    while (attempts < maxAttempts) {
+      let randomPage = Math.floor(Math.random() * maxPage) + 1;
+
+      if (usedPagesMap[genreId].has(randomPage)) {
+        attempts++;
+        continue;
+      }
+
+      usedPagesMap[genreId].add(randomPage);
+
+      fetched = await fetchCategory("movie", genreId, randomPage);
+      allResults = fetched.flat();
+      uniqueResults = allResults.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.id === item.id)
+      );
+
+      if (uniqueResults.length > 0) {
+        return uniqueResults;
+      }
+
+      attempts++;
+    }
+
+    console.warn("Nenhuma página retornou resultados para o gênero:", genreId);
+    return [];
+
   } catch (error) {
     console.error("Erro ao buscar filmes:", error);
     return [];
@@ -292,46 +319,63 @@ export const initialRequestTVShow = async (
   try {
     const genreId = filters.id;
 
-    // Inicializa a estrutura para o gênero, se ainda não existir
     if (!usedPagesMapTV[genreId]) {
       usedPagesMapTV[genreId] = new Set();
     }
 
-    let page = filters.page;
-    const maxPage = 10;
+    const maxPage = 100;
 
-    // Evita páginas já usadas, incrementando até encontrar uma livre
-    while (usedPagesMapTV[genreId].has(page) && page <= maxPage) {
-      page++;
-    }
-
-    // Se ultrapassar o máximo, encerra
-    if (page > maxPage) {
-      console.warn("Todas as páginas possíveis foram usadas para o gênero de série:", genreId);
-      return [];
-    }
-
-    // Marca a página como usada
-    usedPagesMapTV[genreId].add(page);
-
-    // Faz a requisição com a página válida
-    const fetched = await fetchCategory("tv", genreId, page);
-
-    // Achata o array e remove duplicatas por `id`
-    const allResults = fetched.flat();
-
-    const uniqueResults = allResults.filter(
+    // Primeiro tenta com a página original
+    const firstPage = filters.page;
+    usedPagesMapTV[genreId].add(firstPage);
+    let fetched = await fetchCategory("tv", genreId, firstPage);
+    let allResults = fetched.flat();
+    let uniqueResults = allResults.filter(
       (item, index, self) =>
         index === self.findIndex((t) => t.id === item.id)
     );
 
-    return uniqueResults;
+    if (uniqueResults.length > 0) {
+      return uniqueResults;
+    }
+
+    // Se resultado vazio, tenta com outras páginas aleatórias
+    let attempts = 0;
+    const maxAttempts = maxPage;
+
+    while (attempts < maxAttempts) {
+      let randomPage = Math.floor(Math.random() * maxPage) + 1;
+
+      if (usedPagesMapTV[genreId].has(randomPage)) {
+        attempts++;
+        continue;
+      }
+
+      usedPagesMapTV[genreId].add(randomPage);
+
+      fetched = await fetchCategory("tv", genreId, randomPage);
+      allResults = fetched.flat();
+      uniqueResults = allResults.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.id === item.id)
+      );
+
+      if (uniqueResults.length > 0) {
+        return uniqueResults;
+      }
+
+      attempts++;
+    }
+
+    // Nenhuma página retornou conteúdo
+    console.warn("Nenhuma página retornou resultados para o gênero:", genreId);
+    return [];
+
   } catch (error) {
     console.error("Erro ao buscar séries:", error);
     return [];
   }
 };
-
 
 
 export const initialRequestCinema = async (): Promise<MovieSearchProps[][]> => {

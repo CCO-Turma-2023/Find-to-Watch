@@ -95,7 +95,7 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
         const updatedFilmesFilter = prevFilmesFilter.map(item => {
           if (item.index === index) {
             
-            return { ...item, page: Math.floor(Math.random() * 10) + 1 };
+            return { ...item, page: Math.floor(Math.random() * 100) + 1 };
           }
           
           return item;
@@ -109,7 +109,7 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
         const updatedSeriesFilter = prevSeriesFilter.map(item => {
           if (item.index === index) {
             
-            return { ...item, page: Math.floor(Math.random() * 10) + 1 };
+            return { ...item, page: Math.floor(Math.random() * 100) + 1 };
           }
           
           return item;
