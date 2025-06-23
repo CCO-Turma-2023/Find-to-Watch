@@ -3,8 +3,10 @@ import {
   MovieSearchProps,
   contentProvider,
 } from "@/interfaces/search-interface";
-import axios, { all } from "axios";
+import axios from "axios";
 import React from "react";
+
+const SearchCache = new Map<string, MovieSearchProps[]>();
 
 const getOverviewDifference = (original: any[], translated: any[]) => {
   const map = new Map(
@@ -27,6 +29,7 @@ const fetchFromServer = async (
       `3/search/movie?language=pt-BR&query=${encodeURIComponent(res.title)}`,
       options,
     );
+
     const filtered = searchResp.data.results.filter((movie: any) => {      
       const year = new Date(movie.release_date).getFullYear();
       return yearRange.includes(year);
@@ -34,6 +37,8 @@ const fetchFromServer = async (
     if (filtered.length > 0 && res.overview.trim()) {
       filtered[0].overview = res.overview;
     }
+
+    const cast = filtered[0] ? (await api.get(`3/movie/${filtered[0].id}/credits`, options)).data.cast : []
     return filtered[0];
   });
 
@@ -160,8 +165,10 @@ export const requestContents = async (
     setMedias([]);
     return;
   }
+
   const defaultUrl = `query=${mediaSearch}&language=pt-BR&region=BR&page=1`;
   const defaultUrlEn = `query=${mediaSearch}&page=1`;
+
   let results: MovieSearchProps[] = [];
 
   const filters = [1, 2, 3].map((v) => selectFilter.includes(v));
@@ -169,6 +176,13 @@ export const requestContents = async (
     selectFilter.length === 0 ||
     filters.every(Boolean) ||
     selectFilter.sort().toString() === "1,2,3";
+
+  // Gera chave única para o cache com base na busca + filtros
+  const cacheKey = `${mediaSearch.toLowerCase().trim()}|${selectFilter.sort().join(",")}`;
+  if (SearchCache.has(cacheKey)) {
+    setMedias(SearchCache.get(cacheKey)!);
+    return;
+  }
 
   try {
     const promises: Promise<MovieSearchProps[]>[] = [];
@@ -182,7 +196,7 @@ export const requestContents = async (
     }
 
     const data = await Promise.all(promises);
-    results = data.flat(); // transforma um array [][] em []
+    results = data.flat();
 
     let filteredNowPlaying: MovieSearchProps[] = [];
 
@@ -203,11 +217,16 @@ export const requestContents = async (
     }
 
     results.sort((a: any, b: any) => b.vote_count - a.vote_count);
+
+    // Salva no cache
+    SearchCache.set(cacheKey, results);
+
     setMedias(results);
   } catch (err) {
     console.error("Erro ao buscar conteúdos:", err);
   }
 };
+
 
 export const initialRequestMovie = async (
   filters: {
@@ -306,6 +325,8 @@ export const RequestMediabyId = async (id: string | string[]) => {
     ? `3/movie/${id.slice(0, -1)}`
     : `3/tv/${id.slice(0, -1)}`;
   const res = await api.get(`${endpoint}?language=pt-BR&region=BR`, options);
+  const cast = isMovie ? (await api.get(`3/movie/${id.slice(0, -1)}/credits`, options)).data.cast : 
+  (await api.get(`3/tv/${id.slice(0, -1)}/credits`, options)).data.cast
   return res.data;
 };
 
