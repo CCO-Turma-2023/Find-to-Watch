@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import "dotenv/config";
 
 export default {
   expo: {
@@ -23,6 +23,7 @@ export default {
         backgroundColor: "#ffffff",
       },
       package: "com.tiagofreis.FindtoWatch",
+      useNextNotificationsApi: true,
       config: {
         googleMaps: {
           apiKey: process.env.GOOGLE_MAPS_API_KEY, // Variável de ambiente para a chave da API do Google Maps
