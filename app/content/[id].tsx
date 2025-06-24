@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   Dimensions,
+  FlatList,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { router, useLocalSearchParams } from "expo-router";
@@ -50,6 +51,11 @@ export default function Filmes() {
     const findContent = async () => {
       let foundMovie = null;
 
+
+      if (!foundMovie) {
+        foundMovie = await RequestMediabyId(id);
+      }
+
       if (
         media &&
         media[0].media[0]?.length > 0 &&
@@ -58,7 +64,9 @@ export default function Filmes() {
         // Verifica no media[0]
         for (let item of media[0].media[0]) {
           if (String(item.id) === id.slice(0, -1)) {
-            foundMovie = item;
+            if(!foundMovie.overview){
+              foundMovie.overview = item.overview
+            }
             setNowPlaying(true);
             break;
           }
@@ -67,15 +75,13 @@ export default function Filmes() {
         // Verifica no media[1]
         for (let item of media[1].media[0]) {
           if (String(item.id) === id.slice(0, -1)) {
-            foundMovie = item;
+            if(!foundMovie.overview){
+              foundMovie.overview = item.overview
+            }
             setNowPlaying(true);
             break;
           }
         }
-      }
-
-      if (!foundMovie) {
-        foundMovie = await RequestMediabyId(id);
       }
 
       if (id[id.length - 1] === "1") {
@@ -83,6 +89,8 @@ export default function Filmes() {
       } else {
         foundMovie["title"] = foundMovie["name"];
         delete foundMovie["name"];
+        foundMovie["release_date"] = foundMovie["first_air_date"]
+        delete foundMovie["first_air_date"];
         foundMovie["movie"] = false;
       }
 
@@ -148,94 +156,169 @@ export default function Filmes() {
   return loading || !currentMovie ? (
     <Loading />
   ) : (
-    <ScrollView
-      className="flex-1 gap-3 bg-black p-2"
-      showsVerticalScrollIndicator={false}
-    >
-      <View className="flex-1 gap-3 bg-black">
-        <StatusBar style="light" backgroundColor="black" translucent={false} />
+    <>
+      <Pressable className="absolute mt-10 ml-5 p-3 bg-[rgba(31,45,55,0.5)] rounded-full z-50" onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={30} color="#ffffff" />
+      </Pressable>
+      <ScrollView
+        className="flex-1 gap-3 bg-black p-2"
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="flex-1 gap-3 bg-black">
+          <StatusBar translucent backgroundColor="transparent" />
+          
+          <View className="w-full">
+            <Image
+              source={{
+                uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
+              }}
+              style={{
+                width: windowWidth,
+                height: 600, // ou 400, ajuste conforme seu layout
+              }}
+              resizeMode="cover"
+            />
 
-        <Pressable className="absolute z-50" onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={30} color="#ffffff" />
-        </Pressable>
-        <View className="w-full">
-          <Image
-            source={{
-              uri: `https://image.tmdb.org/t/p/original${currentMovie?.poster_path}`,
-            }}
-            style={{
-              width: windowWidth,
-              height: 600, // ou 400, ajuste conforme seu layout
-            }}
-            resizeMode="cover"
-          />
+              <View className="flex h-full flex-col gap-3 p-2">
+                <View className="flex w-full flex-col gap-2">
 
-          {media && media.length > 0 && (
-            <View className="flex h-full flex-col gap-3 p-2">
-              <View className="flex w-full flex-col gap-2">
-                <View className="absolute -top-12 w-full items-center">
-                  <View className="rounded-full bg-zinc-500/50 px-2 py-1">
+                  <Text className="text-2xl font-bold text-white pt-2 uppercase">
+                    {currentMovie?.title}
+                  </Text>
+
+                  <View className="flex flex-row gap-2 items-center flex-wrap">
+                    <View className="flex flex-row gap-2">
+                      {currentMovie.genres?.map((g : any, index) => (
+                        <View className="flex flex-row gap-2 justify-center items-center">
+                          <Text key={index} className="text-gray-300">{g.name}</Text>
+                          <View className="w-1 h-1 bg-gray-300 rounded-full" />
+                        </View>
+                    ))}
+                    </View>
+                    {currentMovie.runtime ? 
+                    <>
+                    <Text className="text-gray-300">{Math.floor(currentMovie.runtime / 60) + 'h' + currentMovie.runtime % 60 + 'm'}</Text>
+                    <View className="w-1 h-1 bg-gray-300 rounded-full" />
+                    </>
+                    : null}
                     {year ? (
-                      <Text className="font-bold text-white/80">{year}</Text>
-                    ) : null}
+                        <Text className="text-gray-300">{year}</Text>
+                      ) : null}
+                  </View>
+
+                  <ScrollView horizontal>
+                    {currentMovie.ratings?.map((r: any, index) => 
+                      r.Source === "Internet Movie Database" ? (
+                        <View key={index} className="flex mx-1 flex-row items-center gap-2 w-[150px] h-[70px] rounded-3xl justify-center bg-gray-800">
+                          <Image 
+                            source={require('@/assets/images/imdb.png')}
+                            className="w-[80px] h-[80px]"
+                          />
+                          <Text className="text-gray-300">{r.Value}</Text>
+                        </View>
+                      ) : r.Source === "Rotten Tomatoes" ? (
+                        <View key={index} className="flex mx-1 flex-row items-center gap-2 w-[150px] h-[70px] rounded-3xl justify-center bg-gray-800">
+                          <Image 
+                            source={require('@/assets/images/rt.png')}
+                            className="w-[80px] h-[80px]"
+                          />
+                          <Text className="text-gray-300">{r.Value}</Text>
+                        </View>
+                      ) : r.Source === "Metacritic" ? (
+                        <View key={index} className="flex mx-1 flex-row items-center gap-2 w-[150px] h-[70px] rounded-3xl justify-center bg-gray-800">
+                          <Image 
+                            source={require('@/assets/images/mt.png')}
+                            className="w-[80px] h-[80px]"
+                          />
+                          <Text className="text-gray-300">{r.Value}</Text>
+                        </View>
+                      ) : null
+                  )}
+                  </ScrollView>
+
+                  
+
+                  {watchProviders && (
+                  <View className="flex flex-row flex-wrap justify-center items-center">
+                    {
+                      <>
+                        <Text className="mb-2 w-full text-white text-xl font-bold">Streamings</Text>
+                          {watchProviders.map(
+                            (content: contentProvider, index: number) => (
+                              <View key={index} className="w-1/4 p-1">
+                                <TouchableOpacity
+                                  onPress={() => matchLinktoProvider(content)}
+                                >
+                                  <Image
+                                    source={{
+                                      uri: `https://image.tmdb.org/t/p/original${content.logo_path}`,
+                                    }}
+                                    style={{
+                                      height: 60,
+                                      aspectRatio: 1,
+                                      borderRadius: 8
+                                    }}
+                                    resizeMode="cover"
+                                  />
+                                </TouchableOpacity>
+                              </View>
+                            ),
+                          )}
+                        </>
+                      }
+                    </View>
+                  )}
+
+                  <View>
+                    <Text className="text-white text-xl font-bold">Sinopse</Text>
+                    <Text className="text-gray-300">
+                      {currentMovie?.overview && currentMovie?.overview?.length > 0
+                        ? currentMovie.overview
+                        : "Sem sinopse"}
+                    </Text>
+                  </View>
+
+                  <View>
+                    <Text className="text-white text-xl font-bold">Elenco</Text>
+
+                    <FlatList
+                      data={currentMovie.cast?.filter((c: any) => c.profile_path) ?? []}
+                      keyExtractor={(item : any, index) => item.id?.toString() ?? index.toString()}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={{ paddingHorizontal: 10, marginTop: 8 }}
+                      renderItem={({ item }) => (
+                        <View className="mx-1">
+                          <Image
+                            source={{ uri: `https://image.tmdb.org/t/p/w185${item.profile_path}` }}
+                            className="w-[90px] h-[90px] rounded-full"
+                            resizeMode="cover"
+                          />
+                          <Text className="text-white text-xs text-center mt-1 w-[90px]">{item.name}</Text>
+                        </View>
+                      )}
+                    />
                   </View>
                 </View>
 
-                <Text className="text-2xl font-bold text-white">
-                  {currentMovie?.title}
-                </Text>
-
-                <Text className="text-white">
-                  {currentMovie?.overview && currentMovie?.overview?.length > 0
-                    ? currentMovie.overview
-                    : "Sem sinopse"}
-                </Text>
+                {nowPlaying && (
+                  <View>
+                    <Text className="text-white text-xl font-bold">Cinema</Text>
+                    <View className="flex items-center">
+                      <Pressable
+                        className="bg-gray-800 flex justify-center items-center rounded-3xl p-2 w-[100px] h-[80px] "
+                        onPress={OnPress}
+                      >
+                        <Ionicons name="film" size={30} color="#ffffff" />
+                        <Text className="text-white">Ver Sessões</Text>
+                      </Pressable>
+                    </View>
+                  </View>
+                )}
               </View>
-
-              {watchProviders && (
-                <View className="flex flex-row flex-wrap">
-                  {
-                    <>
-                      <Text className="mb-2 w-full text-white">Stream</Text>
-                      {watchProviders.map(
-                        (content: contentProvider, index: number) => (
-                          <View key={index} className="w-1/4 p-1">
-                            <TouchableOpacity
-                              onPress={() => matchLinktoProvider(content)}
-                            >
-                              <Image
-                                source={{
-                                  uri: `https://image.tmdb.org/t/p/original${content.logo_path}`,
-                                }}
-                                style={{
-                                  width: "100%",
-                                  height: 60,
-                                  borderRadius: 8,
-                                }}
-                                resizeMode="contain"
-                              />
-                            </TouchableOpacity>
-                          </View>
-                        ),
-                      )}
-                    </>
-                  }
-                </View>
-              )}
-
-              {nowPlaying && (
-                <Pressable
-                  className="bg- bg- flex w-full items-center"
-                  onPress={OnPress}
-                >
-                  <Ionicons name="film" size={30} color="#ffffff" />
-                  <Text className="text-white">Sessões Disponíveis</Text>
-                </Pressable>
-              )}
-            </View>
-          )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      </>
   );
 }

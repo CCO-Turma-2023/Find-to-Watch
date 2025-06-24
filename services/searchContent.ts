@@ -1,4 +1,4 @@
-import { api, options } from "./api";
+import { api, options, omdb } from "./api";
 import {
   MovieSearchProps,
   contentProvider,
@@ -34,11 +34,11 @@ const fetchFromServer = async (
       const year = new Date(movie.release_date).getFullYear();
       return yearRange.includes(year);
     });
+    
     if (filtered.length > 0 && res.overview.trim()) {
       filtered[0].overview = res.overview;
     }
 
-    const cast = filtered[0] ? (await api.get(`3/movie/${filtered[0].id}/credits`, options)).data.cast : []
     return filtered[0];
   });
 
@@ -106,19 +106,36 @@ const fetchCategory = async (
 ): Promise<MovieSearchProps[]> => {
   const isMovie = mediaType === "movie";
   
-  const flexibleGenres = [99, 27, 10402, 10764, 10762]; // Documentário, Terror, Musical, Reality Show (Série), Infantil (Série)
+  const flexibleGenres = [99, 27, 10402, 10764, 10762, 16]; // Documentário, Terror, Musical, Reality Show (Série), Infantil (Série)
 
   const isFlexibleGenre = flexibleGenres.includes(genreId);
   const minVotes = isFlexibleGenre ? 50 : 500;
   const minRating = isFlexibleGenre ? 6.0 : 7.0;
-  const dateField = isFlexibleGenre ? "1990-01-01" : "2005-01-01";
+  const dateField = isMovie ? 'primary_release_date.gte' : 'first_air_date.gte';
+  const dateCut = isFlexibleGenre ? "1990-01-01" : "2005-01-01";
 
+  let url = '';
 
-  let url = genreId
-    ? `3/discover/${mediaType}?include_adult=false&include_null_first_air_dates=false&language=pt-BR&page=${page}` +
-      `&sort_by=vote_count.desc&with_genres=${genreId}&vote_count.gte=${minVotes}&vote_average.gte=${minRating}` +
-      `&${dateField}=2005-01-01&with_original_language=en`
-    : `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=${page}`;
+  const base = `3/discover/${mediaType}?include_adult=false&include_null_first_air_dates=false&language=pt-BR&page=${page}` +
+              `&sort_by=vote_count.desc&vote_count.gte=${minVotes}&vote_average.gte=${minRating}&${dateField}=${dateCut}&watch_region=BR&include_image_language=pt,null`;
+
+  if (genreId) {
+    if (genreId === 16) {
+     // Animação ocidental (sem animes)
+      url = `${base}&with_genres=16&without_keywords=210024`;
+    } 
+    else if (genreId === 17){
+      // Animes (gênero animação + linguagem japonesa)
+      url = `${base}&with_genres=16&with_original_language=ja`;
+    }
+    else {
+      // Qualquer outro gênero (evita pegar anime junto)
+      url = `${base}&with_genres=${genreId}&without_genres=16`;
+    }
+  } else {
+    // Caso sem filtro de gênero (trending)
+    url = `3/trending/${mediaType}/day?language=pt-BR&region=BR&page=${page}`;
+  }
 
   let res = await api.get(url, options);
 
@@ -270,9 +287,8 @@ export const initialRequestMovie = async (
 
     // Se vazio, começa a tentar páginas aleatórias
     let attempts = 0;
-    const maxAttempts = maxPage;
 
-    while (attempts < maxAttempts) {
+    while (attempts < maxPage) {
       let randomPage = Math.floor(Math.random() * maxPage) + 1;
 
       if (usedPagesMap[genreId].has(randomPage)) {
@@ -341,9 +357,8 @@ export const initialRequestTVShow = async (
 
     // Se resultado vazio, tenta com outras páginas aleatórias
     let attempts = 0;
-    const maxAttempts = maxPage;
 
-    while (attempts < maxAttempts) {
+    while (attempts < maxPage) {
       let randomPage = Math.floor(Math.random() * maxPage) + 1;
 
       if (usedPagesMapTV[genreId].has(randomPage)) {
@@ -363,7 +378,6 @@ export const initialRequestTVShow = async (
       if (uniqueResults.length > 0) {
         return uniqueResults;
       }
-
       attempts++;
     }
 
@@ -424,6 +438,34 @@ export const RequestMediabyId = async (id: string | string[]) => {
   const res = await api.get(`${endpoint}?language=pt-BR&region=BR`, options);
   const cast = isMovie ? (await api.get(`3/movie/${id.slice(0, -1)}/credits`, options)).data.cast : 
   (await api.get(`3/tv/${id.slice(0, -1)}/credits`, options)).data.cast
+
+  let ratings = [];
+  const idBase = id.slice(0, -1);
+
+  if (isMovie) {
+    const imdb_id = res.data.imdb_id;
+
+    if (imdb_id) {
+      const omdbResponse = await omdb.get('', {
+        params: { i: imdb_id },
+      });
+      ratings = omdbResponse.data.Ratings || [];
+    }
+  } else {
+    const externalIdsRes = await api.get(`3/tv/${idBase}/external_ids`, options);
+    const imdb_id = externalIdsRes.data.imdb_id;
+
+    if (imdb_id) {
+      const omdbResponse = await omdb.get('', {
+        params: { i: imdb_id },
+      });
+      ratings = omdbResponse.data.Ratings || [];
+    }
+  }
+
+  // Junta cast e ratings no objeto de resposta
+  res.data.cast = cast;
+  res.data.ratings = ratings;
   return res.data;
 };
 

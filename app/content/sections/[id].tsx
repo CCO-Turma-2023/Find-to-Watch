@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable, StatusBar } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -133,6 +133,7 @@ export default function Section() {
 
   return (
     <View className="flex-1 bg-black p-2">
+      <StatusBar backgroundColor="black" translucent={false} />
       <Pressable onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={30} color="#ffffff" />
       </Pressable>

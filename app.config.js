@@ -58,6 +58,7 @@ export default {
         projectId: "8cc0eb9b-860c-40ad-a7b2-15f235a16cc4",
       },
       tmdbToken: process.env.TMDB_TOKEN, // Variável de ambiente para o token TMDB
+      omdbToken: process.env.OMDB_KEY,
     },
   },
 };

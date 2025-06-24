@@ -6,6 +6,10 @@ export interface MovieSearchProps {
   poster_path: string;
   key: string | undefined
   movie: boolean;
+  genres: []
+  runtime: number
+  cast:[]
+  ratings:[]
   release_date: string
 }
 
