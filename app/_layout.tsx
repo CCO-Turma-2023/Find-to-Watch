@@ -47,6 +47,7 @@ export default function RootLayout() {
 
         saveToken("oifinal");
         saveToken(token);
+        
       } else {
         saveToken("eitanois");
         Alert.alert(
