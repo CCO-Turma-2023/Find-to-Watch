@@ -187,14 +187,16 @@ export default function Filmes() {
                   </Text>
 
                   <View className="flex flex-row gap-2 items-center flex-wrap">
+
                     <View className="flex flex-row gap-2">
-                      {currentMovie.genres?.map((g : any, index) => (
-                        <View className="flex flex-row gap-2 justify-center items-center">
-                          <Text key={index} className="text-gray-300">{g.name}</Text>
-                          <View className="w-1 h-1 bg-gray-300 rounded-full" />
-                        </View>
+                    {currentMovie.genres?.map((g: any, index) => (
+                      <View key={index} className="flex flex-row gap-2 justify-center items-center">
+                        <Text className="text-gray-300">{g.name}</Text>
+                        <View className="w-1 h-1 bg-gray-300 rounded-full" />
+                      </View>
                     ))}
-                    </View>
+                  </View>
+
                     {currentMovie.runtime ? 
                     <>
                     <Text className="text-gray-300">{Math.floor(currentMovie.runtime / 60) + 'h' + currentMovie.runtime % 60 + 'm'}</Text>
@@ -237,7 +239,6 @@ export default function Filmes() {
                   </ScrollView>
 
                   
-
                   {watchProviders && (
                   <View className="flex flex-row flex-wrap justify-center items-center">
                     {
@@ -282,22 +283,25 @@ export default function Filmes() {
                     <Text className="text-white text-xl font-bold">Elenco</Text>
 
                     <FlatList
-                      data={currentMovie.cast?.filter((c: any) => c.profile_path) ?? []}
-                      keyExtractor={(item : any, index) => item.id?.toString() ?? index.toString()}
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={{ paddingHorizontal: 10, marginTop: 8 }}
-                      renderItem={({ item }) => (
-                        <View className="mx-1">
-                          <Image
-                            source={{ uri: `https://image.tmdb.org/t/p/w185${item.profile_path}` }}
-                            className="w-[90px] h-[90px] rounded-full"
-                            resizeMode="cover"
-                          />
-                          <Text className="text-white text-xs text-center mt-1 w-[90px]">{item.name}</Text>
-                        </View>
-                      )}
-                    />
+                    data={currentMovie.cast?.filter((c: any) => c.profile_path) ?? []}
+                    keyExtractor={(item: any, index) => item.id?.toString() ?? index.toString()}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingHorizontal: 10, marginTop: 8 }}
+                    renderItem={({ item }) => (
+                      <View className="mx-1">
+                        <Image
+                          source={{ uri: `https://image.tmdb.org/t/p/w185${item.profile_path}` }}
+                          className="w-[90px] h-[90px] rounded-full"
+                          resizeMode="cover"
+                        />
+                        <Text className="text-white text-xs text-center mt-1 w-[90px]">
+                          {item.name}
+                        </Text>
+                      </View>
+                    )}
+                  />
+
                   </View>
                 </View>
 
