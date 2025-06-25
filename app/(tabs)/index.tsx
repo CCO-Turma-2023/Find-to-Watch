@@ -1,9 +1,10 @@
 import { useContextHome } from "@/contexts/ContextHome";
-import { View } from "react-native";
+import { View, Text, Modal, Pressable } from "react-native";
 import Loading from "@/components/loading"
 import PosterCarousel from "@/components/PosterCarousel"
 import ShowSections from "@/components/ShowSections";
 import Header from "@/components/HeaderComponent";
+import { useState } from "react";
 
 const categorias = [
   { titulo: "Em Cartaz nos Cinemas", index: 0, icon: "theaters" },
@@ -28,6 +29,7 @@ export default function Index() {
   return (
     <>
       <Header />
+
       <View className="flex-1 bg-[#1A1A1A] p-2">
         {loading ? (
           <Loading />

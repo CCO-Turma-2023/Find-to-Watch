@@ -2,6 +2,7 @@ import { router, Stack } from "expo-router";
 import "../global.css";
 import { ProviderHome } from "@/contexts/ContextHome";
 import { ProviderCinema } from "@/contexts/ContextCinema";
+import { SaveTokens } from "@/services/saveTokens";
 import "react-native-reanimated";
 import { LocationProvider } from "@/contexts/ContextLocation";
 import * as Notifications from "expo-notifications";
@@ -24,17 +25,20 @@ export default function RootLayout() {
   useEffect(() => {
     // Função para pegar o token
     const registerForPushNotificationsAsync = async () => {
-      if (Device.isDevice) {
-        const { status: existingStatus } =
-          await Notifications.getPermissionsAsync();
+      if (Device.isDevice) 
+      {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+
         let finalStatus = existingStatus;
 
-        if (existingStatus !== "granted") {
+        if (existingStatus !== "granted") 
+        {
           const { status } = await Notifications.requestPermissionsAsync();
           finalStatus = status;
         }
 
-        if (finalStatus !== "granted") {
+        if (finalStatus !== "granted") 
+        {
           Alert.alert(
             "Permissão negada",
             "Não foi possível obter permissões para notificações.",
@@ -45,6 +49,9 @@ export default function RootLayout() {
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         console.log("Expo Push Token:", token);
         setExpoPushToken(token);
+
+        SaveTokens(token);
+
       } else {
         Alert.alert(
           "Erro",
