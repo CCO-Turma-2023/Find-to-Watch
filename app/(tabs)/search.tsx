@@ -47,7 +47,7 @@ export default function Search() {
 
   return (
     <View style={{paddingBottom:tabBarHeight}} className="flex flex-1 flex-col bg-[#1A1A1A] p-4">
-      <View className="mb-4 flex flex-row items-center gap-1 rounded-3xl border border-gray-400 p-2">
+      <View className="mb-4 flex flex-row items-center gap-1 rounded-3xl border border-gray-400" style={{padding:10}}>
         <AntDesign name="search1" color={"white"} size={20} />
         <TextInput
           className="ml-2 flex-1 text-white"

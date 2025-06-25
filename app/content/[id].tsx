@@ -240,12 +240,12 @@ export default function Filmes() {
                   )}
                   </ScrollView>
 
-                  
-                  {watchProviders && (
+                  <Text className="mb-2 w-full text-white text-xl font-bold">Streamings</Text>
+
+                  {watchProviders ? (
                   <View className="flex flex-row flex-wrap justify-center items-center">
                     {
                       <>
-                        <Text className="mb-2 w-full text-white text-xl font-bold">Streamings</Text>
                           {watchProviders.map(
                             (content: contentProvider, index: number) => (
                               <View key={index} className="w-1/4 p-1">
@@ -270,7 +270,11 @@ export default function Filmes() {
                         </>
                       }
                     </View>
-                  )}
+                  ) : 
+                  <View className="flex justify-center items-center">
+                    <Text className="text-gray-300">Sem streamings disponíveis no Brasil</Text>
+                  </View>
+                  }
 
                   <View>
                     <Text className="text-white text-xl font-bold">Sinopse</Text>

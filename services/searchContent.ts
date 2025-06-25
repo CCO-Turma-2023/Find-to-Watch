@@ -88,7 +88,7 @@ const fetchCategory = async (
 ): Promise<MovieSearchProps[]> => {
   const isMovie = mediaType === "movie";
   
-  const flexibleGenres = [99, 27, 10402, 10764, 10762, 16]; // Documentário, Terror, Musical, Reality Show (Série), Infantil (Série)
+  const flexibleGenres = [99, 27, 10402, 10764, 10762, 16]; // Documentário, Terror, Musical, Reality Show (Série), Infantil (Série), Animação
 
   const isFlexibleGenre = flexibleGenres.includes(genreId);
   const minVotes = isFlexibleGenre ? 50 : 500;
@@ -244,7 +244,6 @@ export const initialRequestMovie = async (
     let fetched = await fetchCategory("movie", genreId, firstPage);
     let allResults = fetched.flat();
     
-
     if (allResults.length > 0) {
       return allResults;
     }
@@ -265,7 +264,6 @@ export const initialRequestMovie = async (
       fetched = await fetchCategory("movie", genreId, randomPage);
       allResults = fetched.flat();
       
-
       if (allResults.length > 0) {
         return allResults;
       }
@@ -308,7 +306,6 @@ export const initialRequestTVShow = async (
     let fetched = await fetchCategory("tv", genreId, firstPage);
     let allResults = fetched.flat();
     
-
     if (allResults.length > 0) {
       return allResults;
     }

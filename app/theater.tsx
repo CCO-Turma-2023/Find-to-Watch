@@ -20,6 +20,7 @@ import { useLocation } from "@/contexts/ContextLocation";
 import * as Location from 'expo-location';
 import { StyleSheet } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface MarkerProps{
   latitude: number;
@@ -140,6 +141,9 @@ useEffect(() => {
 
   return (
   <View className="flex-1 relative">
+    <Pressable className="absolute mt-10 ml-5 p-3 bg-[rgba(31,45,55,0.8)] rounded-full z-50" onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={30} color="#ffffff" />
+    </Pressable>
     {/* Mapa ocupando a tela toda */}
     <MapView
       style={StyleSheet.absoluteFillObject}
@@ -165,13 +169,15 @@ useEffect(() => {
 
     {/* Campo de busca */}
     <View
-      className="flex-row items-center gap-2 border border-gray-400 py-2 px-4 rounded-3xl bg-[#1A1A1A]"
+      className="flex-row items-center gap-2 border border-gray-400  rounded-3xl bg-[rgba(31,45,55,0.8)]"
       style={{
         position: "absolute",
-        top: 90,
+        top: 100,
         left: 20,
         right: 20,
         zIndex: 10,
+        paddingInline: 15,
+        paddingVertical: 10
       }}
     >
       <AntDesign name="search1" color={"white"} size={20} />
