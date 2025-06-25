@@ -20,7 +20,7 @@ export default function AddCinema({cinemas, removeCine} : Props){
           >
             <Link
               href={"/theater"}
-              className={`flex flex-row rounded-xl border border-white p-3`}
+              className={`flex flex-row bg-gray-800 rounded-xl border border-white p-3`}
             >
               <AntDesign name="plus" color="white" size={20}></AntDesign>
             </Link>
@@ -28,7 +28,7 @@ export default function AddCinema({cinemas, removeCine} : Props){
               cinemas.map((cinema: TheaterInterface) => (
                 <View
                   key={cinema.codigo}
-                  className="flex-row items-center rounded-xl border border-white px-2 py-1"
+                  className="flex-row items-center rounded-xl border bg-gray-800 border-white px-2 py-1"
                 >
                   <Link
                     href={{

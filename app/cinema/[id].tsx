@@ -25,8 +25,8 @@ export default function SpecificCinema() {
   return (
     <View className="flex flex-1 flex-col bg-black p-5">
       <StatusBar style="light" backgroundColor="black" translucent={false} />
-      <Pressable onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={30} color="#ffffff" />
+      <Pressable className=" rounded-full bg-gray-800 w-[50px] h-[50px] flex justify-center items-center" onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={30} color="#ffffff" />
       </Pressable>
 
       <View className="h-24 w-full">
@@ -49,7 +49,7 @@ export default function SpecificCinema() {
                 {item.title}
               </Text>
 
-              <Text className="mb-3 text-base text-white">{item.overview}</Text>
+              <Text className="mb-3 text-base text-gray-300">{item.overview}</Text>
 
               {/* Horários Dublados */}
 

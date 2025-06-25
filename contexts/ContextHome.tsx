@@ -24,7 +24,19 @@ interface ContextHomeType {
     page: number;
   }[],
   incPage: (index:number, type: "movie" | "tv") => void
-  loading: boolean
+  loading: boolean;
+  showTab: boolean;
+  setShowTab : React.Dispatch<React.SetStateAction<boolean>>
+  notifications: {
+    title: string;
+    message: string;
+    date : string;
+  }[],
+  setNotifications : React.Dispatch<React.SetStateAction<{
+    title: string;
+    message: string;
+    date : string;
+  }[]>>
 }
 
 const movies = [
@@ -85,6 +97,12 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
     page: number;
   }[]>(series);
   const [initialRequest, setInitialRequest] = useState(true)
+  const [showTab, setShowTab] = useState(false);
+  const [notifications, setNotifications] = useState<{
+    title: string;
+    message: string;
+    date : string;
+  }[]>([])
 
   const incPage = (
     index: number,
@@ -243,7 +261,7 @@ export const ProviderHome = ({ children }: { children: ReactNode }) => {
   }, [seriesFilter]);
 
   return (
-    <ContextHome.Provider value={{ Media, loading, filmesFilter, seriesFilter, incPage }}>
+    <ContextHome.Provider value={{ Media, loading, filmesFilter, seriesFilter, incPage, showTab, setShowTab, notifications, setNotifications }}>
       {children}
     </ContextHome.Provider>
   );

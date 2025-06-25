@@ -132,10 +132,10 @@ export default function Section() {
   }, [valueRegiao]);
 
   return (
-    <View className="flex-1 bg-black p-2">
+    <View className="flex-1 bg-black p-6">
       <StatusBar backgroundColor="black" translucent={false} />
-      <Pressable onPress={() => router.back()}>
-        <Ionicons name="arrow-back" size={30} color="#ffffff" />
+      <Pressable className=" flex justify-center items-center bg-gray-800 rounded-full w-[50px] h-[50px]"  onPress={() => router.back()}>
+        <Ionicons name="chevron-back" size={30} color="#ffffff" />
       </Pressable>
       <Text className="mb-4 text-lg text-white">Selecione uma região:</Text>
 
@@ -192,7 +192,7 @@ export default function Section() {
         </View>
         <ScrollView className="mt-4" showsVerticalScrollIndicator={true}>
           {Theaters && Array.isArray(Theaters) && (
-            <View className="space-y-6">
+            <View className="space-y-6 gap-2">
               {Theaters.map((cinema: TheatersSearchProps, index: number) => (
                 <View key={index} className="rounded-lg bg-gray-800 p-4">
                   <Text className="mb-2 text-xl font-bold text-white">

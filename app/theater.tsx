@@ -225,17 +225,16 @@ useEffect(() => {
               overflow: "hidden",
               borderWidth: 2,
               borderColor: "white",
-              backgroundColor: "#1A1A1A", // Fundo para o ícone
               justifyContent: "center",
               alignItems: "center",
             }}
-            className="rounded-2xl"
+            className="rounded-2xl bg-gray-800"
           >
             <Feather name="film" size={24} color="white" />
           </View>
 
           <Pressable
-            className="rounded-2xl flex gap-1 border border-white p-4 bg-[#1A1A1A]"
+            className="rounded-2xl flex gap-1 border border-white p-4 bg-gray-800"
             style={{paddingTop:30}}
             onPress={() => onPress(t)}
           >

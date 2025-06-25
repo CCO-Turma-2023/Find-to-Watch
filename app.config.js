@@ -64,7 +64,7 @@ export default {
         origin: false,
       },
       eas: {
-        projectId: "54066271-ef6d-4aff-906a-dc8ede7ef8e6",
+        projectId: "8cc0eb9b-860c-40ad-a7b2-15f235a16cc4",
       },
       tmdbToken: process.env.TMDB_TOKEN, // Variável de ambiente para o token TMDB
       omdbToken: process.env.OMDB_KEY,

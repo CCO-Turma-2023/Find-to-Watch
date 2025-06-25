@@ -1,55 +1,53 @@
 import { router, Stack } from "expo-router";
 import "../global.css";
-import { ProviderHome } from "@/contexts/ContextHome";
+import { ProviderHome, useContextHome } from "@/contexts/ContextHome";
 import { ProviderCinema } from "@/contexts/ContextCinema";
-import "react-native-reanimated";
 import { LocationProvider } from "@/contexts/ContextLocation";
+import "react-native-reanimated";
+
 import * as Notifications from "expo-notifications";
+import * as Device from "expo-device";
+import { saveToken } from "@/services/saveToken";
+
 import { useEffect, useState } from "react";
 import { Alert, Platform } from "react-native";
-import * as Device from "expo-device";
-import { saveToken } from "@/services/saveToken"
+import dayjs from "dayjs"; // ➕ adicionado para comparar datas
 
 // Configuração global do handler de notificações
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true, // Mostra alerta mesmo com app aberto
+    shouldShowAlert: false,
     shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });
 
-export default function RootLayout() {
+function NotificationHandler() {
+  const { setShowTab, setNotifications } = useContextHome();
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
 
-  const registerForPushNotificationsAsync = async () => {
+  // 1. Solicita permissão e registra o token
+  useEffect(() => {
+    const register = async () => {
       if (Device.isDevice) {
-        const { status: existingStatus } =
-          await Notifications.getPermissionsAsync();
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
-        
+
         if (existingStatus !== "granted") {
           const { status } = await Notifications.requestPermissionsAsync();
           finalStatus = status;
         }
-        
+
         if (finalStatus !== "granted") {
-          Alert.alert(
-            "Permissão negada",
-            "Não foi possível obter permissões para notificações.",
-          );
+          Alert.alert("Permissão negada", "Não foi possível obter permissões para notificações.");
           return;
         }
+
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         setExpoPushToken(token);
-
         saveToken(token);
-        
       } else {
-        Alert.alert(
-          "Erro",
-          "As notificações só funcionam em dispositivos físicos.",
-        );
+        Alert.alert("Erro", "As notificações só funcionam em dispositivos físicos.");
       }
 
       if (Platform.OS === "android") {
@@ -62,43 +60,62 @@ export default function RootLayout() {
       }
     };
 
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-
-    // Listener de quando a notificação chega
-    const subscription = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        const { title, body } = notification.request.content;
-        Alert.alert(title || "Notificação", body || "");
-      },
-    );
-
-    return () => subscription.remove();
+    register();
   }, []);
 
+  // 2. Limpa notificações se for um novo dia
   useEffect(() => {
-    // Quando o usuário clica na notificação (background OU app fechado)
-    const responseListener =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        const screen = response.notification.request.content.data.screen;
+    const clearOldNotifications = () => {
+      setNotifications((prev) => {
+        if (prev.length === 0) return prev;
 
-        console.log(
-          "Usuário clicou na notificação com o app fechado ou em background",
-        );
-        console.log("Dados recebidos:", screen);
+        const today = dayjs().format("YYYY-MM-DD");
+        const firstDate = dayjs(prev[0].date).format("YYYY-MM-DD");
 
-        router.push("/");
+        if (firstDate !== today) {
+          return [];
+        }
+
+        return prev;
       });
-
-    return () => {
-      Notifications.removeNotificationSubscription(responseListener);
     };
+
+    clearOldNotifications();
   }, []);
 
+  // 3. Ao iniciar, verifica se o app foi aberto por uma notificação
+  useEffect(() => {
+    const checkInitialNotification = async () => {
+      const response = await Notifications.getLastNotificationResponseAsync();
+
+      if (response) {
+        const { title, body } = response.notification.request.content;
+        const receivedAt = new Date(response.notification.date).toISOString();
+
+        const payload = {
+          title: title ?? "",
+          message: body ?? "",
+          date: receivedAt,
+        };
+
+        setNotifications((prev) => [...prev, payload]);
+        setShowTab(true);
+        router.push("/");
+      }
+    };
+
+    checkInitialNotification();
+  }, []);
+
+  return null;
+}
+
+export default function RootLayout() {
   return (
     <ProviderHome>
       <ProviderCinema>
         <LocationProvider>
+          <NotificationHandler />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="theater" options={{ presentation: "modal" }} />
