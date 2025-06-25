@@ -107,6 +107,30 @@ function NotificationHandler() {
     checkInitialNotification();
   }, []);
 
+  // 4. Se o app estiver em background e o usuário tocar na notificação
+  useEffect(() => {
+    const responseListener = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        const { title, body } = response.notification.request.content;
+        const receivedAt = new Date(response.notification.date).toISOString();
+
+        const payload = {
+          title: title ?? "",
+          message: body ?? "",
+          date: receivedAt,
+        };
+
+        setNotifications((prev) => [...prev, payload]);
+        setShowTab(true);
+        router.push("/");
+      }
+    );
+
+    return () => {
+      Notifications.removeNotificationSubscription(responseListener);
+    };
+  }, []);
+
   return null;
 }
 
