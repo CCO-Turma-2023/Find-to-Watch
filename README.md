@@ -1,8 +1,6 @@
-# Welcome to your Expo app 👋
+# How to run the Expo Project: Find to Watch
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
+## Running the Application
 
 1. Install dependencies
 
@@ -10,41 +8,34 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Start the Project
 
    ```bash
     npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+In the output, you'll find options to open the project in different ways:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [IOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+You will just need to read the QR Code that appears, but first, follow the next step.
 
-## Get a fresh project
+3. Install Expo Go app
 
-When you're ready, run:
+AppleStore: https://apps.apple.com/br/app/expo-go/id982107779
+PlayStore: https://play.google.com/store/apps/details?id=host.exp.exponent&hl=pt_BR
 
-```bash
-npm run reset-project
-```
+4. Read the QR Code generated using Expo Go app
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Now you can use the app.
 
-## Learn more
+## How Find to Watch Works
 
-To learn more about developing your project with Expo, look at the following resources:
+The application has as objective to exhibit movies and tv shows with the streaming providers where they are available for every content. Besides that, the app also shows all movies available in theaters now.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+When you want to see where a content is streaming, you can search by his name. After entry in the specific content, you can see providers, cast, IMDb rating and sinopsys.
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+For the theater part, you can search by city and choose what theater do you want to see all movies available with their session hours.
