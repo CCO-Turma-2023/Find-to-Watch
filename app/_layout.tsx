@@ -22,9 +22,7 @@ Notifications.setNotificationHandler({
 export default function RootLayout() {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
 
-  useEffect(() => {
-    // Função para pegar o token
-    const registerForPushNotificationsAsync = async () => {
+  const registerForPushNotificationsAsync = async () => {
       if (Device.isDevice) {
         const { status: existingStatus } =
           await Notifications.getPermissionsAsync();
@@ -65,6 +63,7 @@ export default function RootLayout() {
       }
     };
 
+  useEffect(() => {
     registerForPushNotificationsAsync();
 
     // Listener de quando a notificação chega
