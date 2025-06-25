@@ -18,6 +18,7 @@ export default {
       },
     },
     android: {
+      permissions: ["NOTIFICATIONS"],
       adaptiveIcon: {
         foregroundImage: "./assets/images/logo.png",
         backgroundColor: "#ffffff",
@@ -26,7 +27,7 @@ export default {
       useNextNotificationsApi: true,
       config: {
         googleMaps: {
-          apiKey: process.env.GOOGLE_MAPS_API_KEY, // Variável de ambiente para a chave da API do Google Maps
+          apiKey: process.env.GOOGLE_MAPS_API_KEY,
         },
       },
     },
@@ -46,6 +47,13 @@ export default {
           backgroundColor: "#ffffff",
         },
       ],
+      [
+        "expo-notifications",
+        {
+          icon: "./assets/images/logo.png",
+          color: "#FF231F7C" 
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,
@@ -55,7 +63,7 @@ export default {
         origin: false,
       },
       eas: {
-        projectId: "8cc0eb9b-860c-40ad-a7b2-15f235a16cc4",
+        projectId: "54066271-ef6d-4aff-906a-dc8ede7ef8e6",
       },
       tmdbToken: process.env.TMDB_TOKEN, // Variável de ambiente para o token TMDB
       omdbToken: process.env.OMDB_KEY,

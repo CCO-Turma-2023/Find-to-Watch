@@ -2,13 +2,13 @@ import { router, Stack } from "expo-router";
 import "../global.css";
 import { ProviderHome } from "@/contexts/ContextHome";
 import { ProviderCinema } from "@/contexts/ContextCinema";
-import { SaveTokens } from "@/services/saveTokens";
 import "react-native-reanimated";
 import { LocationProvider } from "@/contexts/ContextLocation";
 import * as Notifications from "expo-notifications";
 import { useEffect, useState } from "react";
 import { Alert, Platform } from "react-native";
 import * as Device from "expo-device";
+import { saveToken } from "@/services/saveToken"
 
 // Configuração global do handler de notificações
 Notifications.setNotificationHandler({
@@ -22,23 +22,18 @@ Notifications.setNotificationHandler({
 export default function RootLayout() {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>();
 
-  useEffect(() => {
-    // Função para pegar o token
-    const registerForPushNotificationsAsync = async () => {
-      if (Device.isDevice) 
-      {
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-
+  const registerForPushNotificationsAsync = async () => {
+      if (Device.isDevice) {
+        const { status: existingStatus } =
+          await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
 
-        if (existingStatus !== "granted") 
-        {
+        if (existingStatus !== "granted") {
           const { status } = await Notifications.requestPermissionsAsync();
           finalStatus = status;
         }
 
-        if (finalStatus !== "granted") 
-        {
+        if (finalStatus !== "granted") {
           Alert.alert(
             "Permissão negada",
             "Não foi possível obter permissões para notificações.",
@@ -50,8 +45,7 @@ export default function RootLayout() {
         console.log("Expo Push Token:", token);
         setExpoPushToken(token);
 
-        SaveTokens(token);
-
+        saveToken(token);
       } else {
         Alert.alert(
           "Erro",
@@ -69,6 +63,7 @@ export default function RootLayout() {
       }
     };
 
+  useEffect(() => {
     registerForPushNotificationsAsync();
 
     // Listener de quando a notificação chega
