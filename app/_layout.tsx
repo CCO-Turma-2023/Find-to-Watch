@@ -8,6 +8,7 @@ import * as Notifications from "expo-notifications";
 import { useEffect, useState } from "react";
 import { Alert, Platform } from "react-native";
 import * as Device from "expo-device";
+import { saveToken } from "@/services/saveToken"
 
 // Configuração global do handler de notificações
 Notifications.setNotificationHandler({
@@ -45,6 +46,8 @@ export default function RootLayout() {
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         console.log("Expo Push Token:", token);
         setExpoPushToken(token);
+
+        saveToken(token);
       } else {
         Alert.alert(
           "Erro",
