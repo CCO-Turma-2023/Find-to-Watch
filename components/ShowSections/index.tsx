@@ -18,7 +18,6 @@ interface Props {
 
 
 export default function ShowSections({sections, media, Header, incPage = false, funcIncPage, Trailers, index1 } : Props){
-    
     return(
         <FlatList
         ListHeaderComponent={Header}

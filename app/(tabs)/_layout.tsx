@@ -37,7 +37,7 @@ export default function TabLayout() {
                 }}
               >
                 <Tabs
-                screenOptions={({ route }) => ({
+                screenOptions={() => ({
                   headerShown: false,
                   tabBarInactiveTintColor: "white",
                   tabBarStyle: {
@@ -50,7 +50,7 @@ export default function TabLayout() {
                     borderTopWidth:0,
                     elevation: 0,
                     borderTopLeftRadius:20,
-                    borderTopRightRadius: 20
+                    borderTopRightRadius: 20, 
                   },
                   tabBarItemStyle: {
                     marginVertical: 12,
