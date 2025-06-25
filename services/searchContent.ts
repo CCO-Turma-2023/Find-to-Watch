@@ -76,27 +76,9 @@ const fetchMediaWithFilter = async (
     api.get(`3/search/${type}?${defaultUrlEn}`, options),
   ]);
 
-  const overviewDif = getOverviewDifference(res.data.results, resEn.data.results);
+  const overviewDif = getOverviewDifference(res.data.results, resEn.data.results)
 
-  let filteredWithProviders = [];
-
-  if(type === "movie"){
-    for (const item of overviewDif) {
-      const providers = await requestWatchProvides(item.id + '1');
-      if (providers !== undefined) {
-        filteredWithProviders.push(item);
-      }
-    }
-  }else{
-    for (const item of overviewDif) {
-      const providers = await requestWatchProvides(item.id + '0');
-      if (providers !== undefined) {
-        filteredWithProviders.push(item);
-      }
-    }
-  }
-
-  return filteredWithProviders;
+  return overviewDif;
 };
 
 const fetchCategory = async (
@@ -143,22 +125,7 @@ const fetchCategory = async (
     (item: any) => item.overview?.trim() !== ""
   );
 
-  let filteredWithProviders = [];
-
-  for (const item of filteredOverview) {
-    const suffix = isMovie ? "1" : "0";
-    const providers = await requestWatchProvides(item.id + suffix);
-    if (providers !== undefined) {
-      filteredWithProviders.push(item);
-    }
-  }
-
-  if (isMovie) {
-    const filteredMovies = await filterOutNowPlaying(filteredWithProviders);
-    return filteredMovies;
-  }
-
-  return filteredWithProviders;
+  return filteredOverview;
 };
 
 
@@ -276,13 +243,10 @@ export const initialRequestMovie = async (
 
     let fetched = await fetchCategory("movie", genreId, firstPage);
     let allResults = fetched.flat();
-    let uniqueResults = allResults.filter(
-      (item, index, self) =>
-        index === self.findIndex((t) => t.id === item.id)
-    );
+    
 
-    if (uniqueResults.length > 0) {
-      return uniqueResults;
+    if (allResults.length > 0) {
+      return allResults;
     }
 
     // Se vazio, começa a tentar páginas aleatórias
@@ -300,13 +264,10 @@ export const initialRequestMovie = async (
 
       fetched = await fetchCategory("movie", genreId, randomPage);
       allResults = fetched.flat();
-      uniqueResults = allResults.filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.id === item.id)
-      );
+      
 
-      if (uniqueResults.length > 0) {
-        return uniqueResults;
+      if (allResults.length > 0) {
+        return allResults;
       }
 
       attempts++;
@@ -346,13 +307,10 @@ export const initialRequestTVShow = async (
     usedPagesMapTV[genreId].add(firstPage);
     let fetched = await fetchCategory("tv", genreId, firstPage);
     let allResults = fetched.flat();
-    let uniqueResults = allResults.filter(
-      (item, index, self) =>
-        index === self.findIndex((t) => t.id === item.id)
-    );
+    
 
-    if (uniqueResults.length > 0) {
-      return uniqueResults;
+    if (allResults.length > 0) {
+      return allResults;
     }
 
     // Se resultado vazio, tenta com outras páginas aleatórias
@@ -370,13 +328,10 @@ export const initialRequestTVShow = async (
 
       fetched = await fetchCategory("tv", genreId, randomPage);
       allResults = fetched.flat();
-      uniqueResults = allResults.filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.id === item.id)
-      );
+      
 
-      if (uniqueResults.length > 0) {
-        return uniqueResults;
+      if (allResults.length > 0) {
+        return allResults;
       }
       attempts++;
     }

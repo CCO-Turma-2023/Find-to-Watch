@@ -25,7 +25,6 @@ export default function ShowMedia({ medias, horizontal, Trailers, incPage = fals
       keyExtractor={(item) => item.id.toString()}
       numColumns={horizontal ? 1 : numColumns}
       horizontal={horizontal}
-      onEndReachedThreshold={1}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8 }}
@@ -56,7 +55,7 @@ export default function ShowMedia({ medias, horizontal, Trailers, incPage = fals
           }
         }
       }}
-      onEndReachedThreshold={4}
+      onEndReachedThreshold={8}
       showsVerticalScrollIndicator={false}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 8 }}

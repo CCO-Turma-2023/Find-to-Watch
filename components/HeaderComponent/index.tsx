@@ -18,7 +18,7 @@ export default function Header() {
       >
         <View className="w-full h-full flex flex-row">
           <View className="h-full w-1/2"/>
-          <View className="h-full w-1/2 bg-[#1A1A1A]">
+          <View className="h-full w-1/2 border-l border-white bg-[#1A1A1A]">
             <Pressable className="p-2" onPress={() => setShowTab(false)}> 
               <Ionicons name="close" color={'white'} size={25}></Ionicons>
             </Pressable>

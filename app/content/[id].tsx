@@ -153,6 +153,8 @@ export default function Filmes() {
     ? new Date(currentMovie.release_date).getFullYear()
     : undefined;
 
+  const cast = currentMovie?.cast.filter((c: any) => c.profile_path) ?? []
+
   return loading || !currentMovie ? (
     <Loading />
   ) : (
@@ -279,11 +281,12 @@ export default function Filmes() {
                     </Text>
                   </View>
 
-                  <View>
+                  {cast.length > 0 && <View>
+                    
                     <Text className="text-white text-xl font-bold">Elenco</Text>
 
                     <FlatList
-                    data={currentMovie.cast?.filter((c: any) => c.profile_path) ?? []}
+                    data={currentMovie.cast.filter((c: any) => c.profile_path) ?? []}
                     keyExtractor={(item: any, index) => item.id?.toString() ?? index.toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -301,8 +304,7 @@ export default function Filmes() {
                       </View>
                     )}
                   />
-
-                  </View>
+                  </View>}
                 </View>
 
                 {nowPlaying && (
