@@ -24,6 +24,7 @@ export default {
         backgroundColor: "#ffffff",
       },
       package: "com.tiagofreis.FindtoWatch",
+      googleServicesFile: "./google-services.json",
       useNextNotificationsApi: true,
       config: {
         googleMaps: {

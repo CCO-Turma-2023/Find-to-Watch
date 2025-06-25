@@ -27,12 +27,12 @@ export default function RootLayout() {
         const { status: existingStatus } =
           await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
-
+        saveToken("oiprimeiro");
         if (existingStatus !== "granted") {
           const { status } = await Notifications.requestPermissionsAsync();
           finalStatus = status;
         }
-
+        saveToken("oi");
         if (finalStatus !== "granted") {
           Alert.alert(
             "Permissão negada",
@@ -40,13 +40,15 @@ export default function RootLayout() {
           );
           return;
         }
-
+        saveToken("oiterceiro");
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         console.log("Expo Push Token:", token);
         setExpoPushToken(token);
 
+        saveToken("oifinal");
         saveToken(token);
       } else {
+        saveToken("eitanois");
         Alert.alert(
           "Erro",
           "As notificações só funcionam em dispositivos físicos.",
