@@ -49,3 +49,5 @@ yarn-error.*
 # example file
 app-example
 .env
+git-filter-repo
+google-services.json
